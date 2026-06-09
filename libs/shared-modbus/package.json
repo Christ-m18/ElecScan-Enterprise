@@ -1,0 +1,35 @@
+{
+  "name": "@elecscan/shared-modbus",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./codecs": {
+      "types": "./dist/codecs/index.d.ts",
+      "default": "./dist/codecs/index.js"
+    },
+    "./catalog": {
+      "types": "./dist/catalog/index.d.ts",
+      "default": "./dist/catalog/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b --watch",
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.30",
+    "@vitest/coverage-v8": "2.1.8",
+    "typescript": "5.7.3",
+    "vitest": "2.1.8"
+  }
+}

@@ -1,0 +1,30 @@
+%% Modos de conectividad ElecScan
+flowchart LR
+    subgraph S1[Sitio - Modo VPN]
+        MI1[MI-550 192.168.1.55:502]
+        VPN1[WireGuard Peer]
+        MI1 --- VPN1
+    end
+
+    subgraph S2[Sitio - Modo Gateway]
+        MI2[MI-550 192.168.1.55:502]
+        GW2[Gateway Agent local]
+        SF[Store-and-Forward queue]
+        MI2 --- GW2
+        GW2 --- SF
+    end
+
+    subgraph CLOUD[ElecScan Cloud]
+        VPN[WireGuard Server]
+        TLS[TLS Mutuo mTLS]
+        CONN[Connector Service]
+        NATS{NATS}
+    end
+
+    VPN1 -->|UDP cifrado| VPN
+    VPN --> CONN
+
+    SF -->|HTTPS mTLS| TLS
+    TLS --> CONN
+
+    CONN --> NATS

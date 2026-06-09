@@ -1,0 +1,202 @@
+address,alias,op,size,type,unit,category,description
+60,AnalyzerModel,R,5,UTF8,,device,Analyzer model string
+70,SerialNumber,R,2,UInt32,,device,Serial number
+72,APPVersion,R,1,UInt16,,device,APP version X.Y.Z
+73,IAPVersion,R,1,UInt16,,device,IAP version X.Y.Z
+74,HWVersion,R,1,UInt16,,device,HW version ab.c:xy.z
+75,DeviceDateTime,R/WC,4,DateTime,,device,Internal clock
+300,InstructionCode,R/W,1,UInt16,,instruction,Command code
+424,InstructionEcho,R,1,UInt16,,instruction,Echoed command code
+425,InstructionResult,R,1,UInt16,,instruction,0 ok / 80 invalid code / 81 invalid param / 82 invalid count / 83 not executed
+500,WiringMode,R/WC,1,UInt16,,config,0=3P4W_4CT 1=3P4W_3CT 2=3P3W_3CT 3=3P3W_2CT 4=1P2W
+501,GridFrequency,R/WC,1,UInt16,Hz,config,50 or 60
+502,NominalVoltage,R/WC,2,UInt32,V,config,Nominal voltage
+504,ABCCTAccessMode,R/WC,1,UInt16,,config,0=Rcoil 1=CT
+505,ABCRcoilSensitivity,R/WC,2,UInt32,mV/kA@50Hz,config,real x100
+507,ABCRcoilNominal,R/WC,2,UInt32,A,config,
+509,ABCRcoilRatio,R/WC,2,UInt32,,config,real x10000
+511,ABCCTSensitivity,R/WC,2,UInt32,mV/A,config,real x100
+513,ABCCTNominal,R/WC,2,UInt32,A,config,
+515,ABCCTRatio,R/WC,2,UInt32,,config,real x10000
+517,NCTAccessMode,R/WC,1,UInt16,,config,0=Rcoil 1=CT
+518,NRcoilSensitivity,R/WC,2,UInt32,mV/kA@50Hz,config,real x100
+520,NRcoilNominal,R/WC,2,UInt32,A,config,
+522,NRcoilRatio,R/WC,2,UInt32,,config,real x10000
+524,NCTSensitivity,R/WC,2,UInt32,mV/A,config,real x100
+526,NCTNominal,R/WC,2,UInt32,A,config,
+528,NCTRatio,R/WC,2,UInt32,,config,real x10000
+530,ABCVTRatio,R/WC,2,UInt32,,config,real x10000
+532,NVTRatio,R/WC,2,UInt32,,config,real x10000
+1000,IA,R,2,Float32,A,realtime,Phase A current
+1002,IB,R,2,Float32,A,realtime,Phase B current
+1004,IC,R,2,Float32,A,realtime,Phase C current
+1006,IN,R,2,Float32,A,realtime,Phase N current
+1008,Iavg,R,2,Float32,A,realtime,Avg ABC current
+1010,UA,R,2,Float32,V,realtime,UA-UN
+1012,UB,R,2,Float32,V,realtime,UB-UN
+1014,UC,R,2,Float32,V,realtime,UC-UN
+1016,UN_G,R,2,Float32,V,realtime,UN-GND
+1018,Uavg,R,2,Float32,V,realtime,Avg ABC voltage
+1020,UAB,R,2,Float32,V,realtime,Line voltage UA-UB
+1022,UBC,R,2,Float32,V,realtime,Line voltage UB-UC
+1024,UCA,R,2,Float32,V,realtime,Line voltage UC-UA
+1026,ULineAvg,R,2,Float32,V,realtime,Line voltage avg
+1028,PA,R,2,Float32,kW,realtime,Phase A active power
+1030,PB,R,2,Float32,kW,realtime,Phase B active power
+1032,PC,R,2,Float32,kW,realtime,Phase C active power
+1034,PTotal,R,2,Float32,kW,realtime,Total active power
+1036,QA,R,2,Float32,kVAR,realtime,Phase A reactive power
+1038,QB,R,2,Float32,kVAR,realtime,Phase B reactive power
+1040,QC,R,2,Float32,kVAR,realtime,Phase C reactive power
+1042,QTotal,R,2,Float32,kVAR,realtime,Total reactive power
+1044,SA,R,2,Float32,kVA,realtime,Phase A apparent power
+1046,SB,R,2,Float32,kVA,realtime,Phase B apparent power
+1048,SC,R,2,Float32,kVA,realtime,Phase C apparent power
+1050,STotal,R,2,Float32,kVA,realtime,Total apparent power
+1052,PFA,R,2,Float32,,realtime,Phase A power factor
+1054,PFB,R,2,Float32,,realtime,Phase B power factor
+1056,PFC,R,2,Float32,,realtime,Phase C power factor
+1058,PFTotal,R,2,Float32,,realtime,Total power factor
+1060,DPFA,R,2,Float32,,realtime,Phase A fundamental PF
+1062,DPFB,R,2,Float32,,realtime,Phase B fundamental PF
+1064,DPFC,R,2,Float32,,realtime,Phase C fundamental PF
+1066,DPFTotal,R,2,Float32,,realtime,Total fundamental PF
+1068,FreqA,R,2,Float32,Hz,realtime,Phase A frequency
+1070,FreqB,R,2,Float32,Hz,realtime,Phase B frequency
+1072,FreqC,R,2,Float32,Hz,realtime,Phase C frequency
+1074,FreqTotal,R,2,Float32,Hz,realtime,Comprehensive frequency
+2500,EPAImp,R,4,Int64,Wh,energy,Phase A positive active energy
+2504,EPBImp,R,4,Int64,Wh,energy,Phase B positive active energy
+2508,EPCImp,R,4,Int64,Wh,energy,Phase C positive active energy
+2512,EPImp,R,4,Int64,Wh,energy,Total positive active energy
+2516,EPAExp,R,4,Int64,Wh,energy,Phase A reverse active energy
+2520,EPBExp,R,4,Int64,Wh,energy,Phase B reverse active energy
+2524,EPCExp,R,4,Int64,Wh,energy,Phase C reverse active energy
+2528,EPExp,R,4,Int64,Wh,energy,Total reverse active energy
+2532,EQAImp,R,4,Int64,Wh,energy,Phase A positive reactive energy
+2536,EQBImp,R,4,Int64,Wh,energy,Phase B positive reactive energy
+2540,EQCImp,R,4,Int64,Wh,energy,Phase C positive reactive energy
+2544,EQImp,R,4,Int64,Wh,energy,Total positive reactive energy
+2548,EQAExp,R,4,Int64,Wh,energy,Phase A reverse reactive energy
+2552,EQBExp,R,4,Int64,Wh,energy,Phase B reverse reactive energy
+2556,EQCExp,R,4,Int64,Wh,energy,Phase C reverse reactive energy
+2560,EQExp,R,4,Int64,Wh,energy,Total reverse reactive energy
+2564,ESA,R,4,Int64,VAh,energy,Phase A apparent energy
+2568,ESB,R,4,Int64,VAh,energy,Phase B apparent energy
+2572,ESC,R,4,Int64,VAh,energy,Phase C apparent energy
+2576,ES,R,4,Int64,VAh,energy,Total apparent energy
+3000,DMDMethod,R/WC,1,UInt16,,demand,0=sliding 1=fixed
+3001,DMDBlock,R/WC,1,UInt16,min,demand,Calc interval
+3002,PDMDResetTime,R,4,DateTime,,demand,Peak demand reset date/time
+3020,PADemand,R,2,Float32,kW,demand,Phase A active demand
+3022,PAPeakDemand,R,2,Float32,kW,demand,Phase A active peak demand
+3024,PAPeakDemandDate,R,4,DateTime,,demand,Phase A active peak time
+3028,PBDemand,R,2,Float32,kW,demand,Phase B active demand
+3030,PBPeakDemand,R,2,Float32,kW,demand,Phase B active peak
+3032,PBPeakDemandDate,R,4,DateTime,,demand,Phase B active peak time
+3036,PCDemand,R,2,Float32,kW,demand,Phase C active demand
+3038,PCPeakDemand,R,2,Float32,kW,demand,Phase C active peak
+3040,PCPeakDemandDate,R,4,DateTime,,demand,Phase C active peak time
+3044,PSUMDemand,R,2,Float32,kW,demand,Total active demand
+3046,PSUMPeakDemand,R,2,Float32,kW,demand,Total active peak
+3048,PSUMPeakDemandDate,R,4,DateTime,,demand,Total active peak time
+3052,QADemand,R,2,Float32,kVar,demand,Phase A reactive demand
+3054,QAPeakDemand,R,2,Float32,kVar,demand,Phase A reactive peak
+3056,QAPeakDemandDate,R,4,DateTime,,demand,Phase A reactive peak time
+3060,QBDemand,R,2,Float32,kVar,demand,Phase B reactive demand
+3062,QBPeakDemand,R,2,Float32,kVar,demand,Phase B reactive peak
+3064,QBPeakDemandDate,R,4,DateTime,,demand,Phase B reactive peak time
+3068,QCDemand,R,2,Float32,kVar,demand,Phase C reactive demand
+3070,QCPeakDemand,R,2,Float32,kVar,demand,Phase C reactive peak
+3072,QCPeakDemandDate,R,4,DateTime,,demand,Phase C reactive peak time
+3076,QSUMDemand,R,2,Float32,kVar,demand,Total reactive demand
+3078,QSUMPeakDemand,R,2,Float32,kVar,demand,Total reactive peak
+3080,QSUMPeakDemandDate,R,4,DateTime,,demand,Total reactive peak time
+3084,SADemand,R,2,Float32,kVa,demand,Phase A apparent demand
+3086,SAPeakDemand,R,2,Float32,kVa,demand,Phase A apparent peak
+3088,SAPeakDemandDate,R,4,DateTime,,demand,Phase A apparent peak time
+3092,SBDemand,R,2,Float32,kVa,demand,Phase B apparent demand
+3094,SBPeakDemand,R,2,Float32,kVa,demand,Phase B apparent peak
+3096,SBPeakDemandDate,R,4,DateTime,,demand,Phase B apparent peak time
+3100,SCDemand,R,2,Float32,kVa,demand,Phase C apparent demand
+3102,SCPeakDemand,R,2,Float32,kVa,demand,Phase C apparent peak
+3104,SCPeakDemandDate,R,4,DateTime,,demand,Phase C apparent peak time
+3108,SSUMDemand,R,2,Float32,kVa,demand,Total apparent demand
+3110,SSUMPeakDemand,R,2,Float32,kVa,demand,Total apparent peak
+3112,SSUMPeakDemandDate,R,4,DateTime,,demand,Total apparent peak time
+3116,IADemand,R,2,Float32,A,demand,Phase A current demand
+3118,IAPeakDemand,R,2,Float32,A,demand,Phase A current peak
+3120,IAPeakDemandDate,R,4,DateTime,,demand,Phase A current peak time
+3124,IBDemand,R,2,Float32,A,demand,Phase B current demand
+3126,IBPeakDemand,R,2,Float32,A,demand,Phase B current peak
+3128,IBPeakDemandDate,R,4,DateTime,,demand,Phase B current peak time
+3132,ICDemand,R,2,Float32,A,demand,Phase C current demand
+3134,ICPeakDemand,R,2,Float32,A,demand,Phase C current peak
+3136,ICPeakDemandDate,R,4,DateTime,,demand,Phase C current peak time
+3140,IAvgDemand,R,2,Float32,A,demand,Three phase avg current demand
+3142,IAvgPeakDemand,R,2,Float32,A,demand,Three phase avg current peak
+3144,IAvgPeakDemandDate,R,4,DateTime,,demand,Three phase avg current peak time
+4000,IATHD,R,2,Float32,%,iharmonic,Phase A current THD
+4002,IBTHD,R,2,Float32,%,iharmonic,Phase B current THD
+4004,ICTHD,R,2,Float32,%,iharmonic,Phase C current THD
+4006,IATOHD,R,2,Float32,%,iharmonic,Phase A odd THD
+4008,IBTOHD,R,2,Float32,%,iharmonic,Phase B odd THD
+4010,ICTOHD,R,2,Float32,%,iharmonic,Phase C odd THD
+4012,IATEHD,R,2,Float32,%,iharmonic,Phase A even THD
+4014,IBTEHD,R,2,Float32,%,iharmonic,Phase B even THD
+4016,ICTEHD,R,2,Float32,%,iharmonic,Phase C even THD
+4018,IAHD1,R,2,Float32,%,iharmonic,1st harmonic % phase A
+4020,IBHD1,R,2,Float32,%,iharmonic,1st harmonic % phase B
+4022,ICHD1,R,2,Float32,%,iharmonic,1st harmonic % phase C
+4312,IAHD50,R,2,Float32,%,iharmonic,50th harmonic % phase A
+4314,IBHD50,R,2,Float32,%,iharmonic,50th harmonic % phase B
+4316,ICHD50,R,2,Float32,%,iharmonic,50th harmonic % phase C
+4400,IAHDV1,R,2,Float32,A,iharmonic,1st harmonic value phase A
+4402,IBHDV1,R,2,Float32,A,iharmonic,1st harmonic value phase B
+4404,ICHDV1,R,2,Float32,A,iharmonic,1st harmonic value phase C
+4694,IAHDV50,R,2,Float32,A,iharmonic,50th harmonic value phase A
+4696,IBHDV50,R,2,Float32,A,iharmonic,50th harmonic value phase B
+4698,ICHDV50,R,2,Float32,A,iharmonic,50th harmonic value phase C
+5000,UATHD,R,2,Float32,%,vharmonic,Phase A voltage THD
+5002,UBTHD,R,2,Float32,%,vharmonic,Phase B voltage THD
+5004,UCTHD,R,2,Float32,%,vharmonic,Phase C voltage THD
+5006,UATOHD,R,2,Float32,%,vharmonic,Phase A odd THD
+5008,UBTOHD,R,2,Float32,%,vharmonic,Phase B odd THD
+5010,UCTOHD,R,2,Float32,%,vharmonic,Phase C odd THD
+5012,UATEHD,R,2,Float32,%,vharmonic,Phase A even THD
+5014,UBTEHD,R,2,Float32,%,vharmonic,Phase B even THD
+5016,UCTEHD,R,2,Float32,%,vharmonic,Phase C even THD
+5018,UAHD1,R,2,Float32,%,vharmonic,1st harmonic % phase A
+5020,UBHD1,R,2,Float32,%,vharmonic,1st harmonic % phase B
+5022,UCHD1,R,2,Float32,%,vharmonic,1st harmonic % phase C
+5312,UAHD50,R,2,Float32,%,vharmonic,50th harmonic % phase A
+5314,UBHD50,R,2,Float32,%,vharmonic,50th harmonic % phase B
+5316,UCHD50,R,2,Float32,%,vharmonic,50th harmonic % phase C
+5400,UAHDV1,R,2,Float32,V,vharmonic,1st harmonic value phase A
+5402,UBHDV1,R,2,Float32,V,vharmonic,1st harmonic value phase B
+5404,UCHDV1,R,2,Float32,V,vharmonic,1st harmonic value phase C
+5694,UAHDV50,R,2,Float32,V,vharmonic,50th harmonic value phase A
+5696,UBHDV50,R,2,Float32,V,vharmonic,50th harmonic value phase B
+5698,UCHDV50,R,2,Float32,V,vharmonic,50th harmonic value phase C
+7000,VNegSeqUnbalance,R,2,Float32,%,unbalance,V negative sequence
+7002,VZeroSeqUnbalance,R,2,Float32,%,unbalance,V zero sequence
+7004,INegSeqUnbalance,R,2,Float32,%,unbalance,I negative sequence
+7006,IZeroSeqUnbalance,R,2,Float32,%,unbalance,I zero sequence
+8000,KFIA,R,2,Float32,,factor,Phase A K factor
+8002,KFIB,R,2,Float32,,factor,Phase B K factor
+8004,KFIC,R,2,Float32,,factor,Phase C K factor
+8010,CFIA,R,2,Float32,,factor,Phase A current crest factor
+8012,CFIB,R,2,Float32,,factor,Phase B current crest factor
+8014,CFIC,R,2,Float32,,factor,Phase C current crest factor
+8020,CFUA,R,2,Float32,,factor,Phase A voltage crest factor
+8022,CFUB,R,2,Float32,,factor,Phase B voltage crest factor
+8024,CFUC,R,2,Float32,,factor,Phase C voltage crest factor
+8100,AngleUAB,R,2,Float32,deg,angle,Angle between UA and UB
+8102,AngleUBC,R,2,Float32,deg,angle,Angle between UB and UC
+8104,AngleUCA,R,2,Float32,deg,angle,Angle between UC and UA
+8106,AngleIAB,R,2,Float32,deg,angle,Angle between IA and IB
+8108,AngleIBC,R,2,Float32,deg,angle,Angle between IB and IC
+8110,AngleICA,R,2,Float32,deg,angle,Angle between IC and IA
+8112,AngleUIA,R,2,Float32,deg,angle,Phase A V vs I
+8114,AngleUIB,R,2,Float32,deg,angle,Phase B V vs I
+8116,AngleUIC,R,2,Float32,deg,angle,Phase C V vs I

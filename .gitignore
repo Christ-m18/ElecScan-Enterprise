@@ -1,0 +1,53 @@
+node_modules/
+dist/
+build/
+.next/
+coverage/
+.turbo/
+.cache/
+*.log
+*.tsbuildinfo
+
+.env
+.env.local
+.env.*.local
+!.env.example
+
+.DS_Store
+Thumbs.db
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+
+prisma/migrations/dev-*
+
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+.vault/
+
+# Storybook
+storybook-static/
+
+# Cache de tests
+.vitest-cache/
+*.coverage
+lcov.info
+
+# Sandbox artifacts
+.aws/
+.gcp/
+.kube/config
+
+# Editor swap
+*.swp
+*~
+
+# Python venv (mlflow tools opcionales)
+.venv/
+__pycache__/

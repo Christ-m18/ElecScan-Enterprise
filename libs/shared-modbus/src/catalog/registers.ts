@@ -1,0 +1,131 @@
+import type { RegisterDescriptor } from '../types.js';
+
+/**
+ * Curated MI-550 register catalog. Every entry here is documented in
+ * docs/03-modbus-catalog/03-register-map.md and the companion CSV.
+ *
+ * This is the runtime source of truth used by the connector to:
+ *  - build polling plans
+ *  - decode raw register arrays into engineering values
+ *  - validate config writes against documented operations
+ */
+export const REGISTERS: ReadonlyArray<RegisterDescriptor> = [
+  // device info
+  { alias: 'AnalyzerModel', address: 60, size: 5, type: 'UTF8', op: 'R', category: 'device', description: 'Analyzer model string' },
+  { alias: 'SerialNumber', address: 70, size: 2, type: 'UInt32', op: 'R', category: 'device', description: 'Serial number' },
+  { alias: 'APPVersion', address: 72, size: 1, type: 'UInt16', op: 'R', category: 'device', description: 'APP version X.Y.Z' },
+  { alias: 'IAPVersion', address: 73, size: 1, type: 'UInt16', op: 'R', category: 'device', description: 'IAP version X.Y.Z' },
+  { alias: 'HWVersion', address: 74, size: 1, type: 'UInt16', op: 'R', category: 'device', description: 'HW version' },
+  { alias: 'DeviceDateTime', address: 75, size: 4, type: 'DateTime', op: 'R/WC', category: 'device', description: 'Internal clock' },
+
+  // power system config
+  { alias: 'WiringMode', address: 500, size: 1, type: 'UInt16', op: 'R/WC', category: 'config', description: 'Wiring mode' },
+  { alias: 'GridFrequency', address: 501, size: 1, type: 'UInt16', op: 'R/WC', unit: 'Hz', category: 'config', description: 'Grid frequency' },
+  { alias: 'NominalVoltage', address: 502, size: 2, type: 'UInt32', op: 'R/WC', unit: 'V', category: 'config', description: 'Nominal voltage' },
+
+  // realtime - currents
+  { alias: 'IA', address: 1000, size: 2, type: 'Float32', op: 'R', unit: 'A', category: 'realtime', description: 'Phase A current' },
+  { alias: 'IB', address: 1002, size: 2, type: 'Float32', op: 'R', unit: 'A', category: 'realtime', description: 'Phase B current' },
+  { alias: 'IC', address: 1004, size: 2, type: 'Float32', op: 'R', unit: 'A', category: 'realtime', description: 'Phase C current' },
+  { alias: 'IN', address: 1006, size: 2, type: 'Float32', op: 'R', unit: 'A', category: 'realtime', description: 'Phase N current' },
+  { alias: 'Iavg', address: 1008, size: 2, type: 'Float32', op: 'R', unit: 'A', category: 'realtime', description: 'Avg ABC current' },
+
+  // realtime - voltages
+  { alias: 'UA', address: 1010, size: 2, type: 'Float32', op: 'R', unit: 'V', category: 'realtime', description: 'UA-UN' },
+  { alias: 'UB', address: 1012, size: 2, type: 'Float32', op: 'R', unit: 'V', category: 'realtime', description: 'UB-UN' },
+  { alias: 'UC', address: 1014, size: 2, type: 'Float32', op: 'R', unit: 'V', category: 'realtime', description: 'UC-UN' },
+  { alias: 'UN_G', address: 1016, size: 2, type: 'Float32', op: 'R', unit: 'V', category: 'realtime', description: 'UN-GND' },
+  { alias: 'Uavg', address: 1018, size: 2, type: 'Float32', op: 'R', unit: 'V', category: 'realtime', description: 'Avg phase voltage' },
+  { alias: 'UAB', address: 1020, size: 2, type: 'Float32', op: 'R', unit: 'V', category: 'realtime', description: 'Line UA-UB' },
+  { alias: 'UBC', address: 1022, size: 2, type: 'Float32', op: 'R', unit: 'V', category: 'realtime', description: 'Line UB-UC' },
+  { alias: 'UCA', address: 1024, size: 2, type: 'Float32', op: 'R', unit: 'V', category: 'realtime', description: 'Line UC-UA' },
+  { alias: 'ULineAvg', address: 1026, size: 2, type: 'Float32', op: 'R', unit: 'V', category: 'realtime', description: 'Line avg' },
+
+  // power
+  { alias: 'PA', address: 1028, size: 2, type: 'Float32', op: 'R', unit: 'kW', category: 'realtime', description: 'Phase A active power' },
+  { alias: 'PB', address: 1030, size: 2, type: 'Float32', op: 'R', unit: 'kW', category: 'realtime', description: 'Phase B active power' },
+  { alias: 'PC', address: 1032, size: 2, type: 'Float32', op: 'R', unit: 'kW', category: 'realtime', description: 'Phase C active power' },
+  { alias: 'PTotal', address: 1034, size: 2, type: 'Float32', op: 'R', unit: 'kW', category: 'realtime', description: 'Total active power' },
+  { alias: 'QA', address: 1036, size: 2, type: 'Float32', op: 'R', unit: 'kVAR', category: 'realtime', description: 'Phase A reactive' },
+  { alias: 'QB', address: 1038, size: 2, type: 'Float32', op: 'R', unit: 'kVAR', category: 'realtime', description: 'Phase B reactive' },
+  { alias: 'QC', address: 1040, size: 2, type: 'Float32', op: 'R', unit: 'kVAR', category: 'realtime', description: 'Phase C reactive' },
+  { alias: 'QTotal', address: 1042, size: 2, type: 'Float32', op: 'R', unit: 'kVAR', category: 'realtime', description: 'Total reactive' },
+  { alias: 'SA', address: 1044, size: 2, type: 'Float32', op: 'R', unit: 'kVA', category: 'realtime', description: 'Phase A apparent' },
+  { alias: 'SB', address: 1046, size: 2, type: 'Float32', op: 'R', unit: 'kVA', category: 'realtime', description: 'Phase B apparent' },
+  { alias: 'SC', address: 1048, size: 2, type: 'Float32', op: 'R', unit: 'kVA', category: 'realtime', description: 'Phase C apparent' },
+  { alias: 'STotal', address: 1050, size: 2, type: 'Float32', op: 'R', unit: 'kVA', category: 'realtime', description: 'Total apparent' },
+  { alias: 'PFA', address: 1052, size: 2, type: 'Float32', op: 'R', category: 'realtime', description: 'Phase A PF' },
+  { alias: 'PFB', address: 1054, size: 2, type: 'Float32', op: 'R', category: 'realtime', description: 'Phase B PF' },
+  { alias: 'PFC', address: 1056, size: 2, type: 'Float32', op: 'R', category: 'realtime', description: 'Phase C PF' },
+  { alias: 'PFTotal', address: 1058, size: 2, type: 'Float32', op: 'R', category: 'realtime', description: 'Total PF' },
+  { alias: 'DPFA', address: 1060, size: 2, type: 'Float32', op: 'R', category: 'realtime', description: 'Phase A DPF' },
+  { alias: 'DPFB', address: 1062, size: 2, type: 'Float32', op: 'R', category: 'realtime', description: 'Phase B DPF' },
+  { alias: 'DPFC', address: 1064, size: 2, type: 'Float32', op: 'R', category: 'realtime', description: 'Phase C DPF' },
+  { alias: 'DPFTotal', address: 1066, size: 2, type: 'Float32', op: 'R', category: 'realtime', description: 'Total DPF' },
+  { alias: 'FreqA', address: 1068, size: 2, type: 'Float32', op: 'R', unit: 'Hz', category: 'realtime', description: 'Phase A freq' },
+  { alias: 'FreqB', address: 1070, size: 2, type: 'Float32', op: 'R', unit: 'Hz', category: 'realtime', description: 'Phase B freq' },
+  { alias: 'FreqC', address: 1072, size: 2, type: 'Float32', op: 'R', unit: 'Hz', category: 'realtime', description: 'Phase C freq' },
+  { alias: 'FreqTotal', address: 1074, size: 2, type: 'Float32', op: 'R', unit: 'Hz', category: 'realtime', description: 'Three-phase comprehensive freq' },
+
+  // Energy
+  { alias: 'EPAImp', address: 2500, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase A active import' },
+  { alias: 'EPBImp', address: 2504, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase B active import' },
+  { alias: 'EPCImp', address: 2508, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase C active import' },
+  { alias: 'EPImp', address: 2512, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Total active import' },
+  { alias: 'EPAExp', address: 2516, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase A active export' },
+  { alias: 'EPBExp', address: 2520, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase B active export' },
+  { alias: 'EPCExp', address: 2524, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase C active export' },
+  { alias: 'EPExp', address: 2528, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Total active export' },
+  { alias: 'EQAImp', address: 2532, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase A reactive import' },
+  { alias: 'EQBImp', address: 2536, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase B reactive import' },
+  { alias: 'EQCImp', address: 2540, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase C reactive import' },
+  { alias: 'EQImp', address: 2544, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Total reactive import' },
+  { alias: 'EQAExp', address: 2548, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase A reactive export' },
+  { alias: 'EQBExp', address: 2552, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase B reactive export' },
+  { alias: 'EQCExp', address: 2556, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Phase C reactive export' },
+  { alias: 'EQExp', address: 2560, size: 4, type: 'Int64', op: 'R', unit: 'Wh', category: 'energy', description: 'Total reactive export' },
+  { alias: 'ESA', address: 2564, size: 4, type: 'Int64', op: 'R', unit: 'VAh', category: 'energy', description: 'Phase A apparent' },
+  { alias: 'ESB', address: 2568, size: 4, type: 'Int64', op: 'R', unit: 'VAh', category: 'energy', description: 'Phase B apparent' },
+  { alias: 'ESC', address: 2572, size: 4, type: 'Int64', op: 'R', unit: 'VAh', category: 'energy', description: 'Phase C apparent' },
+  { alias: 'ES', address: 2576, size: 4, type: 'Int64', op: 'R', unit: 'VAh', category: 'energy', description: 'Total apparent' },
+
+  // Unbalance + factors + angles (a subset is enough for catalog tests)
+  { alias: 'VNegSeqUnbalance', address: 7000, size: 2, type: 'Float32', op: 'R', unit: '%', category: 'unbalance', description: 'V negative sequence' },
+  { alias: 'VZeroSeqUnbalance', address: 7002, size: 2, type: 'Float32', op: 'R', unit: '%', category: 'unbalance', description: 'V zero sequence' },
+  { alias: 'INegSeqUnbalance', address: 7004, size: 2, type: 'Float32', op: 'R', unit: '%', category: 'unbalance', description: 'I negative sequence' },
+  { alias: 'IZeroSeqUnbalance', address: 7006, size: 2, type: 'Float32', op: 'R', unit: '%', category: 'unbalance', description: 'I zero sequence' },
+];
+
+export function findRegister(alias: string): RegisterDescriptor | undefined {
+  return REGISTERS.find((r) => r.alias === alias);
+}
+
+/**
+ * Build the harmonic register address for a given phase, channel and harmonic
+ * number (1..50). This is generated rather than enumerated because there are
+ * 600 such registers and the manual gives the closed-form patterns.
+ *
+ *  channel 'I' (current):
+ *    pct:   4018 + (h-1)*6 + phaseIdx*2
+ *    value: 4400 + (h-1)*6 + phaseIdx*2
+ *  channel 'U' (voltage):
+ *    pct:   5018 + (h-1)*6 + phaseIdx*2
+ *    value: 5400 + (h-1)*6 + phaseIdx*2
+ *
+ *  phaseIdx: 0=A, 1=B, 2=C
+ */
+export function harmonicAddress(
+  channel: 'I' | 'U',
+  phase: 'A' | 'B' | 'C',
+  harmonic: number,
+  flavor: 'percent' | 'value',
+): number {
+  if (harmonic < 1 || harmonic > 50) {
+    throw new RangeError(`harmonic out of 1..50: ${harmonic}`);
+  }
+  const phaseIdx = phase === 'A' ? 0 : phase === 'B' ? 1 : 2;
+  const base = channel === 'I'
+    ? (flavor === 'percent' ? 4018 : 4400)
+    : (flavor === 'percent' ? 5018 : 5400);
+  return base + (harmonic - 1) * 6 + phaseIdx * 2;
+}

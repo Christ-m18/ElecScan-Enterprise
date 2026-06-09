@@ -1,0 +1,76 @@
+%% ER core - ElecScan Enterprise
+erDiagram
+    TENANT ||--o{ CUSTOMER : has
+    CUSTOMER ||--o{ SITE : has
+    SITE ||--o{ DEVICE : has
+    TENANT ||--o{ USER : has
+    USER ||--o{ SESSION : has
+    USER ||--o{ MFACREDENTIAL : has
+    USER ||--o{ PASSKEY : has
+    USER }o--o{ ROLE : has
+    ROLE }o--o{ PERMISSION : has
+    DEVICE ||--o{ DEVICEPROFILEVERSION : has
+    DEVICE ||--o{ CONFIGCHANGE : receives
+    SITE ||--o| SITEGEOFENCE : has
+    SITE ||--o{ GATEWAYAGENT : runs
+    SITE ||--o{ VPNPEER : has
+    TENANT ||--o{ ALARMRULE : owns
+    ALARMRULE ||--o{ ALARM : raises
+    ALARM ||--o{ ALARMINSTANCE : delivers
+    DEVICE ||--o{ PQEVENT : produces
+    PQEVENT ||--o{ PQEVENTREADING : has
+    TENANT ||--o{ AUDITEVENT : logs
+    TENANT ||--o{ REPORT : generates
+    REPORTTEMPLATE ||--o{ REPORT : uses
+
+    TENANT {
+        uuid id PK
+        text name
+        text slug
+        text plan
+        timestamptz created_at
+    }
+    DEVICE {
+        uuid id PK
+        uuid tenant_id FK
+        uuid site_id FK
+        text model
+        text serial
+        text name
+        text address
+        int port
+        text connection_mode
+        text status
+        timestamptz last_seen_at
+    }
+    DEVICEPROFILEVERSION {
+        uuid id PK
+        uuid device_id FK
+        int version
+        text wiring_mode
+        int grid_freq
+        int nominal_voltage
+        jsonb ct_abc
+        jsonb ct_n
+        jsonb vt_ratios
+        jsonb event_thresholds
+        jsonb demand_policy
+        jsonb drift_policy
+        jsonb harm_threshold
+        int co2_factor
+        uuid created_by
+        timestamptz created_at
+    }
+    CONFIGCHANGE {
+        uuid id PK
+        uuid device_id FK
+        int instruction_code
+        jsonb parameters
+        uuid requested_by
+        uuid approved_by
+        text status
+        uuid command_id
+        int error_code
+        timestamptz created_at
+        timestamptz applied_at
+    }

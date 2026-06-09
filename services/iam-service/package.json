@@ -1,0 +1,34 @@
+{
+  "name": "@elecscan/iam-service",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsx watch src/main.ts",
+    "start": "node dist/main.js",
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "test:cov": "vitest run --coverage",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@nestjs/common": "10.4.15",
+    "@nestjs/core": "10.4.15",
+    "@nestjs/platform-fastify": "10.4.15",
+    "@elecscan/shared-config": "workspace:*",
+    "@elecscan/shared-domain": "workspace:*",
+    "argon2": "0.41.1",
+    "jose": "5.9.6",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.1",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.30",
+    "@vitest/coverage-v8": "2.1.8",
+    "tsx": "4.19.2",
+    "typescript": "5.7.3",
+    "vitest": "2.1.8"
+  }
+}

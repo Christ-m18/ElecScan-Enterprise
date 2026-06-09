@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Rajdhani:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html, body {
+    height: 100%;
+    background: #060d1a;
+    color: #cce4ff;
+    font-family: 'Rajdhani', sans-serif;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 80% 50% at 10% 0%, rgba(0, 229, 255, 0.04), transparent 50%),
+      radial-gradient(ellipse 60% 40% at 90% 100%, rgba(255, 107, 0, 0.04), transparent 50%);
+    z-index: 0;
+  }
+}
+
+@layer components {
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(0, 229, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 229, 255, 0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+}

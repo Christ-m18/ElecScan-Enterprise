@@ -1,0 +1,61 @@
+%% ElecScan Enterprise - C4 Level 1 (Context)
+graph LR
+    OP[Operador Industrial]:::user
+    ADM[Administrador]:::user
+    AN[Analista]:::user
+    MGR[Gerente]:::user
+
+    subgraph ES[ElecScan Enterprise]
+        WEB[Web App Next.js]
+        PWA[Mobile PWA]
+        API[API Gateway]
+        SVC[Microservicios Backend]
+        DB[(PostgreSQL + TimescaleDB)]
+        REDIS[(Redis)]
+        BUS{NATS JetStream}
+        ML[ML Service]
+        OBS[Observability Stack]
+    end
+
+    GW[Gateway en Sitio Linux/Windows/RPi]:::edge
+    VPN[(WireGuard VPN)]:::edge
+    MI[(MI-550 Mi550)]:::device
+
+    EMAIL[(Email SMTP)]:::ext
+    TG[(Telegram)]:::ext
+    WA[(WhatsApp Cloud)]:::ext
+    SMS[(Twilio SMS)]:::ext
+    PUSH[(FCM/APNs)]:::ext
+    MAP[(Mapbox)]:::ext
+
+    OP --> WEB
+    OP --> PWA
+    ADM --> WEB
+    AN --> WEB
+    MGR --> WEB
+
+    WEB --> API
+    PWA --> API
+    API --> SVC
+    SVC --> DB
+    SVC --> REDIS
+    SVC <--> BUS
+    SVC --> ML
+    SVC --> OBS
+
+    SVC --> EMAIL
+    SVC --> TG
+    SVC --> WA
+    SVC --> SMS
+    SVC --> PUSH
+    WEB --> MAP
+
+    SVC --> VPN
+    SVC --> GW
+    VPN --> MI
+    GW --> MI
+
+    classDef user fill:#0a1628,stroke:#00e5ff,color:#cce4ff
+    classDef edge fill:#0e1f38,stroke:#ffcc00,color:#cce4ff
+    classDef device fill:#0e1f38,stroke:#00ff88,color:#cce4ff
+    classDef ext fill:#172d4a,stroke:#3d6d9a,color:#cce4ff

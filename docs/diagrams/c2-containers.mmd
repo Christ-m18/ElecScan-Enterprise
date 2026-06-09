@@ -1,0 +1,94 @@
+%% ElecScan Enterprise - C4 Level 2 (Containers)
+graph TB
+    subgraph EDGE[Capa de Sitio]
+        MI[MI-550]
+        CONN[Connector Modbus]
+        GW[Gateway Agent Win/Linux/RPi]
+    end
+
+    subgraph EDGE_NET[Capa de Red]
+        VPN[WireGuard]
+        TLS[TLS Mutuo]
+    end
+
+    subgraph CLOUD[Cloud / On-Prem]
+        TRAEFIK[Traefik Ingress]
+        NGINX[NGINX Static]
+        API[api-gateway NestJS]
+        IAM[iam-service]
+        DEV[device-service]
+        ING[ingest-service]
+        HIST[historian-service]
+        EVT[event-detection-service]
+        AL[alarm-service]
+        CFG[Configuration Manager dentro de device-service]
+        REP[reporting-service]
+        ML[ml-service]
+        GEO[geo-service]
+        AUD[audit-service]
+        NOT[notification-service]
+
+        PG[(Postgres 16 + TimescaleDB)]
+        RD[(Redis 7)]
+        S3[(S3-compat MinIO)]
+        NATS{NATS JetStream}
+
+        PROM[(Prometheus)]
+        LOKI[(Loki)]
+        GRAF[Grafana]
+        OTEL[OTel Collector]
+    end
+
+    USR[Usuarios] --> TRAEFIK
+    TRAEFIK --> NGINX
+    TRAEFIK --> API
+    API --> IAM
+    API --> DEV
+    API --> REP
+    API --> AL
+    API --> GEO
+    API --> ML
+
+    CONN -->|publica| NATS
+    CONN -->|gRPC ack| DEV
+    GW --> TLS --> CONN
+    CONN --> VPN
+    VPN --> MI
+
+    NATS --> ING --> HIST
+    NATS --> EVT
+    NATS --> AL
+    NATS --> AUD
+    NATS --> NOT
+
+    IAM --> PG
+    DEV --> PG
+    HIST --> PG
+    EVT --> PG
+    AL --> PG
+    REP --> PG
+    GEO --> PG
+    AUD --> PG
+    NOT --> PG
+
+    HIST --> RD
+    DEV --> RD
+    AL --> RD
+
+    REP --> S3
+    AUD --> S3
+    HIST --> S3
+
+    API --> OTEL
+    IAM --> OTEL
+    DEV --> OTEL
+    ING --> OTEL
+    HIST --> OTEL
+    EVT --> OTEL
+    AL --> OTEL
+    ML --> OTEL
+    NOT --> OTEL
+    OTEL --> PROM
+    OTEL --> LOKI
+    PROM --> GRAF
+    LOKI --> GRAF

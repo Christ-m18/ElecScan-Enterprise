@@ -1,0 +1,45 @@
+%% ER Timescale - ElecScan Enterprise
+erDiagram
+    DEVICE ||--o{ REALTIME_METRIC : streams
+    DEVICE ||--o{ ENERGY_METRIC : streams
+    DEVICE ||--o{ DEMAND_METRIC : streams
+    DEVICE ||--o{ HARMONIC_METRIC : streams
+
+    REALTIME_METRIC {
+        timestamptz ts PK
+        uuid tenant_id PK
+        uuid device_id PK
+        text metric_key PK
+        text phase PK
+        float value
+        smallint quality
+    }
+    ENERGY_METRIC {
+        timestamptz ts PK
+        uuid tenant_id PK
+        uuid device_id PK
+        text metric_key PK
+        text phase PK
+        numeric value
+        smallint quality
+    }
+    DEMAND_METRIC {
+        timestamptz ts PK
+        uuid tenant_id PK
+        uuid device_id PK
+        text metric_key PK
+        text phase PK
+        float value
+        float peak_value
+        timestamptz peak_ts
+    }
+    HARMONIC_METRIC {
+        timestamptz ts PK
+        uuid tenant_id PK
+        uuid device_id PK
+        text channel PK
+        text phase PK
+        smallint harmonic_n PK
+        float pct
+        float abs_value
+    }
