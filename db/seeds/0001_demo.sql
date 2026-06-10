@@ -30,8 +30,28 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 
--- Nota: el password hash de abajo es Argon2id de "demo-password-12345"
--- generado de forma deterministica. iam-service en M0 mantiene los users
--- en memoria, no en Postgres. Esta seed prepara el modelo de M5 cuando
--- el repositorio migre a Prisma.
--- En M0 el login se hace con POST /iam/auth/signup primero (ver RUN.md).
+-- app_user rows below are for M5 when the repository migrates to Prisma.
+-- In M0 the iam-service seeds these users in-memory via DevSeedService on startup.
+-- Password hashes are Argon2id (m=65536, t=3, p=4).
+
+-- demo@elecscan.local / demo-password-12345
+INSERT INTO app_user (id, tenant_id, email, password_hash, status)
+VALUES (
+  'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+  '11111111-1111-4111-8111-111111111111',
+  'demo@elecscan.local',
+  '$argon2id$v=19$m=65536,t=3,p=4$wqfn3HBQfhUDfUTLHaRTkA$Ek1aGRmXF9kJlqj3yJQdFcZt6QYTiWXCRl9jqZ+xkSo',
+  'active'
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- christopherjesusrosario@gmail.com / MI550PQA
+INSERT INTO app_user (id, tenant_id, email, password_hash, status)
+VALUES (
+  'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb',
+  '11111111-1111-4111-8111-111111111111',
+  'christopherjesusrosario@gmail.com',
+  '$argon2id$v=19$m=65536,t=3,p=4$GoarLb9VJFEkhvwMDeT3TA$+3+Dgu+xJQQylk/B4D6oMUcFxHgHZ9omLFicpxKFuOA',
+  'active'
+)
+ON CONFLICT (id) DO NOTHING;

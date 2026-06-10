@@ -39,6 +39,12 @@ storybook-static/
 *.coverage
 lcov.info
 
+# Compiled TypeScript artifacts in lib src dirs (outDir misconfiguration artifacts)
+libs/*/src/**/*.js
+libs/*/src/**/*.d.ts
+libs/*/src/**/*.js.map
+libs/*/src/**/*.d.ts.map
+
 # Sandbox artifacts
 .aws/
 .gcp/

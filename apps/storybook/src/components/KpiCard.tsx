@@ -7,69 +7,58 @@ export interface KpiCardProps {
   accent?: string;
 }
 
-/**
- * Minimal KPI card matching the MI550 Original theme. Used in dashboards
- * (see docs/08-ux-ui/01-design-system.md section 8.4).
- */
-export function KpiCard({ label, value, unit, accent = '#00e5ff' }: KpiCardProps) {
+export function KpiCard({ label, value, unit, accent = '#F5A623' }: KpiCardProps) {
   return (
     <div
       style={{
-        background: '#0a1628',
-        border: '1px solid #172d4a',
-        borderRadius: 7,
-        padding: 13,
-        position: 'relative',
+        background: '#FFFFFF',
+        border: '1px solid #D0D0D0',
+        borderRadius: 4,
         overflow: 'hidden',
         minWidth: 145,
       }}
     >
+      {/* Steel blue-gray label header */}
       <div
         style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 2,
-          background: `linear-gradient(90deg, transparent, ${accent}, transparent)`,
-        }}
-      />
-      <div
-        style={{
-          fontFamily: 'JetBrains Mono, monospace',
-          fontSize: 9,
+          background: '#5A6B7B',
+          padding: '4px 10px',
+          fontFamily: 'Inter, system-ui, sans-serif',
+          fontSize: 10,
           fontWeight: 600,
-          letterSpacing: 2,
+          letterSpacing: 1.5,
           textTransform: 'uppercase',
-          color: '#3d6d9a',
-          marginBottom: 4,
+          color: '#ffffff',
         }}
       >
         {label}
       </div>
-      <div
-        style={{
-          fontFamily: 'JetBrains Mono, monospace',
-          fontSize: 20,
-          fontWeight: 700,
-          letterSpacing: -1,
-          color: accent,
-        }}
-      >
-        {value}
-      </div>
-      {unit ? (
+      {/* Value area */}
+      <div style={{ padding: '8px 10px' }}>
         <div
           style={{
             fontFamily: 'JetBrains Mono, monospace',
-            fontSize: 10,
-            color: '#3d6d9a',
-            marginTop: 3,
+            fontSize: 22,
+            fontWeight: 700,
+            letterSpacing: -0.5,
+            color: accent,
           }}
         >
-          {unit}
+          {value}
         </div>
-      ) : null}
+        {unit ? (
+          <div
+            style={{
+              fontFamily: 'Inter, system-ui, sans-serif',
+              fontSize: 10,
+              color: '#777777',
+              marginTop: 2,
+            }}
+          >
+            {unit}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

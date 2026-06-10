@@ -6,11 +6,12 @@ export interface PhaseValueProps {
   unit?: string;
 }
 
+// MI550 SCADA palette — light background friendly
 const phaseColor: Record<Phase, string> = {
-  A: '#ff2d5b',
-  B: '#00e5ff',
-  C: '#ffcc00',
-  N: '#cce4ff',
+  A: '#E53935',
+  B: '#1976D2',
+  C: '#F5A623',
+  N: '#555555',
 };
 
 export function PhaseValue({ phase, value, unit }: PhaseValueProps) {
@@ -22,20 +23,20 @@ export function PhaseValue({ phase, value, unit }: PhaseValueProps) {
         alignItems: 'center',
         gap: 6,
         fontFamily: 'JetBrains Mono, monospace',
-        fontSize: 12,
-        color: '#cce4ff',
+        fontSize: 13,
+        color: '#333333',
       }}
     >
       <span
         style={{
-          width: 18,
-          height: 18,
-          borderRadius: 4,
-          background: `${color}22`,
-          border: `1px solid ${color}`,
+          width: 20,
+          height: 20,
+          borderRadius: 3,
+          background: `${color}18`,
+          border: `1.5px solid ${color}`,
           color,
           fontWeight: 700,
-          fontSize: 10,
+          fontSize: 11,
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -44,7 +45,7 @@ export function PhaseValue({ phase, value, unit }: PhaseValueProps) {
         {phase}
       </span>
       <strong style={{ color }}>{value}</strong>
-      {unit ? <span style={{ color: '#3d6d9a' }}>{unit}</span> : null}
+      {unit ? <span style={{ color: '#777777', fontWeight: 400 }}>{unit}</span> : null}
     </span>
   );
 }
