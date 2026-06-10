@@ -9,11 +9,14 @@ describe('Float32 codec', () => {
   });
 
   it('round-trips arbitrary values', () => {
-    const values = [0, 1, -1, 0.0001, -12345.678, 1.5e20, -1.5e-20];
+    const values = [0, 1, -1, 0.0001, -12345.678, -1.5e-20];
     for (const v of values) {
       const regs = encodeFloat32(v);
       expect(decodeFloat32(regs)).toBeCloseTo(v, 3);
     }
+    // Float32 ULP at 1.5e20 is ~1e13 — absolute tolerance is meaningless; use relative
+    const regs = encodeFloat32(1.5e20);
+    expect(decodeFloat32(regs) / 1.5e20).toBeCloseTo(1, 4);
   });
 
   it('decodes arrays of float32', () => {
