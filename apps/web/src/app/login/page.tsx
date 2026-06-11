@@ -1,8 +1,10 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +15,11 @@ export default function LoginPage() {
     setError(null);
     setBusy(true);
     try {
-      const apiBase = process.env.NEXT_PUBLIC_IAM_BASE_URL ?? 'http://localhost:4001';
+      const apiBase =
+        process.env.NEXT_PUBLIC_IAM_BASE_URL ??
+        (process.env.NODE_ENV === 'production'
+          ? 'https://elecscan-iam.vercel.app'
+          : 'http://localhost:4001');
       const res = await fetch(`${apiBase}/iam/auth/login`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -22,7 +28,7 @@ export default function LoginPage() {
       if (!res.ok) {
         setError('Credenciales inválidas');
       } else {
-        setError(null);
+        router.push('/');
       }
     } catch {
       setError('No se pudo contactar al servicio de identidad');
@@ -113,7 +119,6 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
-                minLength={12}
                 className="field-input"
                 placeholder="••••••••••••"
               />
