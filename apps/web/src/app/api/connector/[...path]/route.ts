@@ -15,20 +15,14 @@ async function forward(req: NextRequest, path: string[]): Promise<Response> {
   });
 }
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> },
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
   const upstream = await forward(req, path);
   const data = await upstream.json().catch(() => null);
   return NextResponse.json(data, { status: upstream.status });
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> },
-) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
   const upstream = await forward(req, path);
   const data = await upstream.json().catch(() => null);

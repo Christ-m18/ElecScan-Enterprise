@@ -8,6 +8,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
 } from '@nestjs/common';
 import { z } from 'zod';
 // biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
@@ -66,6 +67,18 @@ export class DevicesController {
   getSnapshot(@Param('id') id: string) {
     if (!this.repo.findById(id)) throw new NotFoundException(`Device ${id} not found`);
     return this.snapshots.getLatest(id);
+  }
+
+  @Get(':id/history')
+  getHistory(
+    @Param('id') id: string,
+    @Query('aliases') aliases: string,
+    @Query('minutes') minutes?: string,
+  ) {
+    if (!this.repo.findById(id)) throw new NotFoundException(`Device ${id} not found`);
+    const aliasList = aliases ? aliases.split(',').filter(Boolean) : [];
+    const sinceMs = minutes ? Number.parseInt(minutes, 10) * 60_000 : 300_000;
+    return this.snapshots.getHistory(id, aliasList, sinceMs);
   }
 
   @Delete(':id')
