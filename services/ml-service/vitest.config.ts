@@ -3,6 +3,7 @@ export default defineConfig({
   test: {
     pool: 'forks',
     environment: 'node',
+    passWithNoTests: true,
     include: ['src/**/*.test.ts'],
     coverage: {
       provider: 'v8',
