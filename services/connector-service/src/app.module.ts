@@ -5,6 +5,7 @@ import { AlarmStore } from './alarms/alarm.store.js';
 import { SnapshotDecoder } from './application/snapshot-decoder.js';
 import { ConfigController } from './config/config.controller.js';
 import { ConfigService } from './config/config.service.js';
+import { PendingApprovalStore } from './config/pending-approval.store.js';
 import { DevicesController } from './devices/devices.controller.js';
 import { DevicesRepository } from './devices/devices.repository.js';
 import { HealthController } from './health/health.controller.js';
@@ -19,6 +20,7 @@ import { SnapshotStore } from './polling/snapshot.store.js';
     PollingEngine,
     SnapshotStore,
     ConfigService,
+    PendingApprovalStore,
     AlarmStore,
     AlarmDetector,
   ],

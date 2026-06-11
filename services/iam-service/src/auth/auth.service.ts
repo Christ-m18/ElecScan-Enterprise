@@ -1,12 +1,24 @@
 import { randomUUID } from 'node:crypto';
 import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as argon2 from 'argon2';
-import { SignJWT } from 'jose';
-import { type IUserRepository, USER_REPOSITORY, type UserRecord } from './user.repository.js';
+import { type JWTVerifyResult, SignJWT, jwtVerify } from 'jose';
+import {
+  type IUserRepository,
+  USER_REPOSITORY,
+  type UserRecord,
+  type UserRole,
+} from './user.repository.js';
 
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
+}
+
+export interface JwtAccessPayload {
+  sub: string;
+  tid: string;
+  eml: string;
+  rol: UserRole;
 }
 
 @Injectable()
@@ -25,6 +37,7 @@ export class AuthService {
     tenantId: string,
     email: string,
     password: string,
+    role: UserRole = 'viewer',
     hashOptions?: argon2.Options,
   ): Promise<{ userId: string }> {
     const existing = await this.users.findByEmail(email);
@@ -35,6 +48,7 @@ export class AuthService {
       tenantId,
       email: email.toLowerCase(),
       passwordHash: hash,
+      role,
       status: 'active',
       mfaEnrolled: false,
       createdAt: new Date().toISOString(),
@@ -52,9 +66,59 @@ export class AuthService {
     return this.issueTokens(user);
   }
 
+  async refresh(refreshToken: string): Promise<AuthTokens> {
+    let verified: JWTVerifyResult;
+    try {
+      verified = await jwtVerify(refreshToken, this.refreshSecret, {
+        issuer: 'elecscan-iam',
+        audience: 'elecscan-refresh',
+      });
+    } catch {
+      throw new UnauthorizedException('invalid refresh token');
+    }
+    const userId = verified.payload.sub;
+    if (!userId) throw new UnauthorizedException('missing sub');
+    const user = await this.users.findById(userId);
+    if (!user || user.status !== 'active') throw new UnauthorizedException('user not active');
+    return this.issueTokens(user);
+  }
+
+  async me(accessToken: string): Promise<Omit<UserRecord, 'passwordHash'>> {
+    let verified: JWTVerifyResult;
+    try {
+      verified = await jwtVerify(accessToken, this.accessSecret, {
+        issuer: 'elecscan-iam',
+        audience: 'elecscan-api',
+      });
+    } catch {
+      throw new UnauthorizedException('invalid token');
+    }
+    const userId = verified.payload.sub;
+    if (!userId) throw new UnauthorizedException('missing sub');
+    const user = await this.users.findById(userId);
+    if (!user) throw new UnauthorizedException('user not found');
+    const { passwordHash: _, ...safe } = user;
+    return safe;
+  }
+
+  async listUsers(): Promise<Omit<UserRecord, 'passwordHash'>[]> {
+    const all = await this.users.findAll();
+    return all.map(({ passwordHash: _, ...safe }) => safe);
+  }
+
+  async setRole(
+    targetUserId: string,
+    role: UserRole,
+  ): Promise<Omit<UserRecord, 'passwordHash'> | null> {
+    const updated = await this.users.updateRole(targetUserId, role);
+    if (!updated) return null;
+    const { passwordHash: _, ...safe } = updated;
+    return safe;
+  }
+
   private async issueTokens(user: UserRecord): Promise<AuthTokens> {
     const now = Math.floor(Date.now() / 1000);
-    const accessToken = await new SignJWT({ tid: user.tenantId, eml: user.email })
+    const accessToken = await new SignJWT({ tid: user.tenantId, eml: user.email, rol: user.role })
       .setProtectedHeader({ alg: 'HS256' })
       .setSubject(user.id)
       .setIssuedAt(now)
