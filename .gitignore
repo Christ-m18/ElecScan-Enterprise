@@ -57,3 +57,4 @@ libs/*/src/**/*.d.ts.map
 # Python venv (mlflow tools opcionales)
 .venv/
 __pycache__/
+.vercel

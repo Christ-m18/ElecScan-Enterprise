@@ -21,7 +21,7 @@
     "compose:up": "docker compose -f infra/compose/docker-compose.dev.yml up -d",
     "compose:down": "docker compose -f infra/compose/docker-compose.dev.yml down",
     "compose:logs": "docker compose -f infra/compose/docker-compose.dev.yml logs -f",
-    "prepare": "lefthook install"
+    "prepare": "node -e \"if (!process.env.CI) require('child_process').execSync('lefthook install', {stdio: 'inherit'})\""
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
