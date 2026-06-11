@@ -13,7 +13,8 @@
       "**/node_modules",
       "**/coverage",
       "**/*.generated.ts",
-      "**/prisma/migrations"
+      "**/prisma/migrations",
+      "**/\\[...path\\]"
     ]
   },
   "formatter": {

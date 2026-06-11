@@ -5,7 +5,7 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "tsc -b",
-    "dev": "tsx watch --env-file=../../.env src/main.ts",
+    "dev": "tsc -b && node --env-file=../../.env --watch dist/main.js",
     "start": "node dist/main.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -25,6 +25,9 @@
     "zod": "3.23.8"
   },
   "devDependencies": {
+    "@swc-node/register": "^1.11.1",
+    "@swc/core": "^1.15.41",
+    "@swc/helpers": "^0.5.23",
     "@types/node": "20.11.30",
     "@vitest/coverage-v8": "2.1.8",
     "tsx": "4.19.2",

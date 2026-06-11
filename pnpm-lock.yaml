@@ -349,6 +349,15 @@ importers:
         specifier: 3.23.8
         version: 3.23.8
     devDependencies:
+      '@swc-node/register':
+        specifier: ^1.11.1
+        version: 1.11.1(@swc/core@1.15.41(@swc/helpers@0.5.23))(@swc/types@0.1.26)(typescript@5.7.3)
+      '@swc/core':
+        specifier: ^1.15.41
+        version: 1.15.41(@swc/helpers@0.5.23)
+      '@swc/helpers':
+        specifier: ^0.5.23
+        version: 0.5.23
       '@types/node':
         specifier: 20.11.30
         version: 20.11.30

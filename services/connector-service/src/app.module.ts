@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { SnapshotDecoder } from './application/snapshot-decoder.js';
+import { DevicesController } from './devices/devices.controller.js';
+import { DevicesRepository } from './devices/devices.repository.js';
 import { HealthController } from './health/health.controller.js';
+import { PollingEngine } from './polling/polling.engine.js';
+import { SnapshotStore } from './polling/snapshot.store.js';
 
 @Module({
-  controllers: [HealthController],
-  providers: [SnapshotDecoder],
+  controllers: [HealthController, DevicesController],
+  providers: [DevicesRepository, SnapshotDecoder, PollingEngine, SnapshotStore],
 })
 export class AppModule {}

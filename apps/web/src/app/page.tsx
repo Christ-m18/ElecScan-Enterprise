@@ -44,7 +44,7 @@ export default function HomePage() {
       {/* ── Hero section ────────────────────────────────────────── */}
       <section className="flex flex-1 flex-col items-center justify-center px-8 text-center">
         <div className="mb-2 text-[10px] font-medium uppercase tracking-[4px] text-muted">
-          M0 / Bootstrap
+          M1 / Conectividad
         </div>
         <h1 className="font-ui text-4xl font-bold tracking-wider text-text">
           ELEC<em className="not-italic text-accent">SCAN</em> Enterprise
@@ -82,26 +82,29 @@ export default function HomePage() {
 
         {/* Quick-nav tiles */}
         <div className="mt-6 grid grid-cols-4 gap-3 text-sm">
-          {[
-            { icon: '📊', label: 'Mediciones' },
-            { icon: '📋', label: 'Registros' },
-            { icon: '⚙️', label: 'Configuración' },
-            { icon: '🔔', label: 'Alarmas' },
-          ].map(({ icon, label }) => (
-            <div
+          {(
+            [
+              { icon: '📊', label: 'Mediciones', href: '/mediciones' },
+              { icon: '📋', label: 'Registros', href: '/registros' },
+              { icon: '⚙️', label: 'Configuración', href: '/configuracion' },
+              { icon: '🔔', label: 'Alarmas', href: '/alarmas' },
+            ] as const
+          ).map(({ icon, label, href }) => (
+            <Link
               key={label}
+              href={href}
               className="flex flex-col items-center gap-2 rounded border border-border bg-surface px-5 py-4 text-text transition hover:border-accent hover:text-accent"
             >
               <span className="text-xl">{icon}</span>
               <span className="font-medium">{label}</span>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
 
       {/* ── Action bar footer ────────────────────────────────────── */}
       <footer className="action-bar justify-center text-xs text-muted">
-        ElecScan Enterprise &middot; v0.0.0 &middot; M0 bootstrap
+        ElecScan Enterprise &middot; v0.1.0 &middot; M1 Conectividad MI-550
       </footer>
     </main>
   );
