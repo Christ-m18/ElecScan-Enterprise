@@ -8,7 +8,7 @@ async function bootstrap(): Promise<void> {
   const env = loadEnv(CommonEnvSchema.merge(HttpEnvSchema), {
     ...process.env,
     SERVICE_NAME: process.env.SERVICE_NAME ?? 'ml-service',
-    PORT: process.env.ML_SERVICE_PORT ?? '4009',
+    PORT: process.env.ML_SERVICE_PORT ?? '4010',
   } as NodeJS.ProcessEnv);
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
