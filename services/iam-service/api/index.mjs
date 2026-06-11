@@ -1,11 +1,15 @@
 // Standalone IAM serverless handler for Vercel — no NestJS, no workspace deps.
-import { randomUUID, createHash } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import * as argon2 from 'argon2';
 import { SignJWT } from 'jose';
 
 // ─── Config ───────────────────────────────────────────────────────────
-const ACCESS_SECRET  = new TextEncoder().encode(process.env.JWT_ACCESS_SECRET  || 'dev-only-access-secret-please-rotate-me!');
-const REFRESH_SECRET = new TextEncoder().encode(process.env.JWT_REFRESH_SECRET || 'dev-only-refresh-secret-please-rotate-me!');
+const ACCESS_SECRET = new TextEncoder().encode(
+  process.env.JWT_ACCESS_SECRET || 'dev-only-access-secret-please-rotate-me!',
+);
+const REFRESH_SECRET = new TextEncoder().encode(
+  process.env.JWT_REFRESH_SECRET || 'dev-only-refresh-secret-please-rotate-me!',
+);
 
 // ─── In-memory user store ─────────────────────────────────────────────
 const users = new Map();
@@ -76,14 +80,20 @@ function cors(res) {
 async function readBody(req) {
   const chunks = [];
   for await (const c of req) chunks.push(c);
-  try { return JSON.parse(Buffer.concat(chunks).toString()); }
-  catch { return null; }
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString());
+  } catch {
+    return null;
+  }
 }
 
 // ─── Handler ──────────────────────────────────────────────────────────
 export default async function handler(req, res) {
   cors(res);
-  if (req.method === 'OPTIONS') { res.statusCode = 204; return res.end(); }
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204;
+    return res.end();
+  }
 
   await ensureSeeded();
 

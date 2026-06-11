@@ -42,13 +42,7 @@ export const ConfigWriteAckedPayload = z.object({
   commandId: UuidSchema,
   instructionCode: z.number().int(),
   echoCode: z.number().int(),
-  resultCode: z.union([
-    z.literal(0),
-    z.literal(80),
-    z.literal(81),
-    z.literal(82),
-    z.literal(83),
-  ]),
+  resultCode: z.union([z.literal(0), z.literal(80), z.literal(81), z.literal(82), z.literal(83)]),
   appliedAt: TimestampSchema,
 });
 export const ConfigWriteAckedEvent = withEnvelope(ConfigWriteAckedPayload);

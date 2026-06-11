@@ -1,4 +1,4 @@
-import { ModbusError, ModbusErrorCode, ModbusFramingError } from './errors.js';
+import { ModbusError, type ModbusErrorCode, ModbusFramingError } from './errors.js';
 import type { ModbusReadResponse, ModbusWriteResponse } from './types.js';
 
 export const FC_READ_HOLDING = 0x03;

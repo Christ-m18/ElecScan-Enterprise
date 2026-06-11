@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { RealtimeSnapshotEvent, HarmonicSampleSchema } from './telemetry.js';
+import { HarmonicSampleSchema, RealtimeSnapshotEvent } from './telemetry.js';
 
 describe('RealtimeSnapshotEvent', () => {
   it('accepts a well-formed event', () => {
@@ -23,8 +23,6 @@ describe('RealtimeSnapshotEvent', () => {
   });
 
   it('rejects harmonic samples out of range', () => {
-    expect(() =>
-      HarmonicSampleSchema.parse({ channel: 'I', phase: 'A', harmonic: 51 }),
-    ).toThrow();
+    expect(() => HarmonicSampleSchema.parse({ channel: 'I', phase: 'A', harmonic: 51 })).toThrow();
   });
 });

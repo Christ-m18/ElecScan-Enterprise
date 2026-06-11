@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { NotFoundException } from '@nestjs/common';
+import { describe, expect, it } from 'vitest';
 import { CatalogController } from './catalog.controller.js';
 
 describe('CatalogController', () => {

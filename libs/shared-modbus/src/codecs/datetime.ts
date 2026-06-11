@@ -47,18 +47,21 @@ export function decodeDateTimeToDate(registers: ReadonlyArray<number>, offset = 
  * Encode a Date or fields into 4 registers, ready for the instruction
  * register write (command 1200).
  */
-export function encodeDateTime(input: Date | ModbusDateTimeFields): [number, number, number, number] {
-  const f = input instanceof Date
-    ? {
-        year: input.getUTCFullYear(),
-        month: input.getUTCMonth() + 1,
-        day: input.getUTCDate(),
-        hour: input.getUTCHours(),
-        minute: input.getUTCMinutes(),
-        second: input.getUTCSeconds(),
-        millisecond: input.getUTCMilliseconds(),
-      }
-    : input;
+export function encodeDateTime(
+  input: Date | ModbusDateTimeFields,
+): [number, number, number, number] {
+  const f =
+    input instanceof Date
+      ? {
+          year: input.getUTCFullYear(),
+          month: input.getUTCMonth() + 1,
+          day: input.getUTCDate(),
+          hour: input.getUTCHours(),
+          minute: input.getUTCMinutes(),
+          second: input.getUTCSeconds(),
+          millisecond: input.getUTCMilliseconds(),
+        }
+      : input;
   if (f.year < 2000 || f.year > 2099) throw new RangeError(`year out of range: ${f.year}`);
   if (f.month < 1 || f.month > 12) throw new RangeError(`month out of range: ${f.month}`);
   if (f.day < 1 || f.day > 31) throw new RangeError(`day out of range: ${f.day}`);

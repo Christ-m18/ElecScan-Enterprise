@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { decodeMbap, encodeMbap, firstFrameLength, MBAP_HEADER_LENGTH } from './mbap.js';
 import { ModbusFramingError } from './errors.js';
+import { MBAP_HEADER_LENGTH, decodeMbap, encodeMbap, firstFrameLength } from './mbap.js';
 
 describe('MBAP header', () => {
   it('encodes the manual example request header', () => {
@@ -33,10 +33,7 @@ describe('MBAP header', () => {
 
   it('returns total length when complete', () => {
     // header says length=6, so total = 6 + 6 = 12
-    const buf = Buffer.concat([
-      encodeMbap(0, 1, 6),
-      Buffer.from([0x03, 0x04, 0x00, 0x00, 0x00]),
-    ]);
+    const buf = Buffer.concat([encodeMbap(0, 1, 6), Buffer.from([0x03, 0x04, 0x00, 0x00, 0x00])]);
     expect(firstFrameLength(buf)).toBe(12);
   });
 

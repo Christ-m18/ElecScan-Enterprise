@@ -1,8 +1,13 @@
 import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
+    pool: 'forks',
     environment: 'node',
     include: ['src/**/*.test.ts'],
-    coverage: { provider: 'v8', reporter: ['text', 'lcov'], thresholds: { lines: 80, branches: 70, functions: 80, statements: 80 } },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      thresholds: { lines: 80, branches: 70, functions: 80, statements: 80 },
+    },
   },
 });

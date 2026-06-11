@@ -1,12 +1,8 @@
-import { Inject, Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { SignJWT } from 'jose';
-import {
-  type IUserRepository,
-  USER_REPOSITORY,
-  type UserRecord,
-} from './user.repository.js';
+import { type IUserRepository, USER_REPOSITORY, type UserRecord } from './user.repository.js';
 
 export interface AuthTokens {
   accessToken: string;
@@ -19,16 +15,21 @@ export class AuthService {
   private readonly refreshSecret: Uint8Array;
 
   constructor(@Inject(USER_REPOSITORY) private readonly users: IUserRepository) {
-    const access = process.env['JWT_ACCESS_SECRET'] ?? 'dev-only-access-secret-please-rotate';
-    const refresh = process.env['JWT_REFRESH_SECRET'] ?? 'dev-only-refresh-secret-please-rotate';
+    const access = process.env.JWT_ACCESS_SECRET ?? 'dev-only-access-secret-please-rotate';
+    const refresh = process.env.JWT_REFRESH_SECRET ?? 'dev-only-refresh-secret-please-rotate';
     this.accessSecret = new TextEncoder().encode(access);
     this.refreshSecret = new TextEncoder().encode(refresh);
   }
 
-  async signup(tenantId: string, email: string, password: string): Promise<{ userId: string }> {
+  async signup(
+    tenantId: string,
+    email: string,
+    password: string,
+    hashOptions?: argon2.Options,
+  ): Promise<{ userId: string }> {
     const existing = await this.users.findByEmail(email);
     if (existing) throw new ConflictException('email already registered');
-    const hash = await argon2.hash(password, { type: argon2.argon2id });
+    const hash = await argon2.hash(password, { type: argon2.argon2id, ...hashOptions });
     const record: UserRecord = {
       id: randomUUID(),
       tenantId,

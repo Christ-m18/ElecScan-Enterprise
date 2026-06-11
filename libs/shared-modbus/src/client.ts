@@ -1,17 +1,9 @@
 import { Socket } from 'node:net';
 import { setTimeout as delay } from 'node:timers/promises';
 import { ModbusConnectionError, ModbusTimeoutError } from './errors.js';
-import { encodeMbap, firstFrameLength, MBAP_HEADER_LENGTH } from './mbap.js';
-import {
-  decodeResponsePdu,
-  encodeReadHoldingRequest,
-  encodeWriteMultipleRequest,
-} from './pdu.js';
-import type {
-  ModbusClientOptions,
-  ModbusReadResponse,
-  ModbusWriteResponse,
-} from './types.js';
+import { MBAP_HEADER_LENGTH, encodeMbap, firstFrameLength } from './mbap.js';
+import { decodeResponsePdu, encodeReadHoldingRequest, encodeWriteMultipleRequest } from './pdu.js';
+import type { ModbusClientOptions, ModbusReadResponse, ModbusWriteResponse } from './types.js';
 
 interface PendingTransaction {
   resolve: (pdu: Buffer) => void;

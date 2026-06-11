@@ -15,6 +15,8 @@ describe('loadEnv', () => {
   });
 
   it('throws ConfigError listing issues when invalid', () => {
-    expect(() => loadEnv(schema, { NODE_ENV: 'staging' } as NodeJS.ProcessEnv)).toThrow(ConfigError);
+    expect(() => loadEnv(schema, { NODE_ENV: 'staging' } as NodeJS.ProcessEnv)).toThrow(
+      ConfigError,
+    );
   });
 });

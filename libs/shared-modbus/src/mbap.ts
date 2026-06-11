@@ -12,11 +12,7 @@ export const PROTOCOL_ID_MODBUS = 0x0000;
  * @param unitId         slave id (uint8). Default 1 for MI-550.
  * @param pduLength      length in bytes of [unitId + PDU]. Caller must compute this.
  */
-export function encodeMbap(
-  transactionId: number,
-  unitId: number,
-  pduLength: number,
-): Buffer {
+export function encodeMbap(transactionId: number, unitId: number, pduLength: number): Buffer {
   if (transactionId < 0 || transactionId > 0xffff) {
     throw new RangeError(`transactionId out of uint16 range: ${transactionId}`);
   }

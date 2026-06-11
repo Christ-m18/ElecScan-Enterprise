@@ -1,5 +1,5 @@
-import { Injectable, type OnApplicationBootstrap } from '@nestjs/common';
-import type { AuthService } from './auth.service.js';
+import { Inject, Injectable, type OnApplicationBootstrap } from '@nestjs/common';
+import { AuthService } from './auth.service.js';
 
 const DEMO_TENANT_ID = '11111111-1111-4111-8111-111111111111';
 
@@ -10,12 +10,16 @@ const SEED_USERS = [
 
 @Injectable()
 export class DevSeedService implements OnApplicationBootstrap {
-  constructor(private readonly auth: AuthService) {}
+  constructor(@Inject(AuthService) private readonly auth: AuthService) {}
 
   async onApplicationBootstrap(): Promise<void> {
     for (const u of SEED_USERS) {
       try {
-        await this.auth.signup(DEMO_TENANT_ID, u.email, u.password);
+        await this.auth.signup(DEMO_TENANT_ID, u.email, u.password, {
+          memoryCost: 4096,
+          timeCost: 2,
+          parallelism: 1,
+        });
       } catch {
         // User already registered on a previous bootstrap — skip.
       }

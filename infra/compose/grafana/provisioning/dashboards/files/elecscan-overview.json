@@ -14,9 +14,7 @@
       "title": "Services up",
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
-      "targets": [
-        { "expr": "count(up{job=~\".*-service|api-gateway\"} == 1)", "refId": "A" }
-      ],
+      "targets": [{ "expr": "count(up{job=~\".*-service|api-gateway\"} == 1)", "refId": "A" }],
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
@@ -38,7 +36,11 @@
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "gridPos": { "h": 8, "w": 18, "x": 6, "y": 0 },
       "targets": [
-        { "expr": "sum by (job) (rate(http_server_requests_total[1m]))", "refId": "A", "legendFormat": "{{job}}" }
+        {
+          "expr": "sum by (job) (rate(http_server_requests_total[1m]))",
+          "refId": "A",
+          "legendFormat": "{{job}}"
+        }
       ]
     },
     {
@@ -48,7 +50,11 @@
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
       "targets": [
-        { "expr": "sum by (device_id) (rate(elecscan_modbus_read_total[1m]))", "refId": "A", "legendFormat": "{{device_id}}" }
+        {
+          "expr": "sum by (device_id) (rate(elecscan_modbus_read_total[1m]))",
+          "refId": "A",
+          "legendFormat": "{{device_id}}"
+        }
       ]
     },
     {
@@ -58,7 +64,11 @@
       "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
       "targets": [
-        { "expr": "sum by (error_code) (rate(elecscan_modbus_errors_total[5m]))", "refId": "A", "legendFormat": "code {{error_code}}" }
+        {
+          "expr": "sum by (error_code) (rate(elecscan_modbus_errors_total[5m]))",
+          "refId": "A",
+          "legendFormat": "code {{error_code}}"
+        }
       ]
     },
     {

@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { POLLING_BLOCKS } from './blocks.js';
 import {
+  INSTRUCTIONS,
+  INSTRUCTION_REGISTER_START,
   buildInstructionPayload,
   findInstruction,
-  INSTRUCTION_REGISTER_START,
-  INSTRUCTIONS,
 } from './instructions.js';
-import { findRegister, harmonicAddress, REGISTERS } from './registers.js';
+import { REGISTERS, findRegister, harmonicAddress } from './registers.js';
 
 describe('Instruction catalog', () => {
   it('includes the documented critical commands', () => {
@@ -69,9 +69,10 @@ describe('Instruction catalog', () => {
 
   it('has all documented instruction codes', () => {
     const codes = INSTRUCTIONS.map((i) => i.code).sort((a, b) => a - b);
-    expect(codes).toEqual(
-      [1001, 1002, 1003, 1005, 1050, 1051, 1052, 1053, 1054, 1055, 1056, 1060, 1070, 1080, 1090, 1200, 1300, 1301, 1302, 6000],
-    );
+    expect(codes).toEqual([
+      1001, 1002, 1003, 1005, 1050, 1051, 1052, 1053, 1054, 1055, 1056, 1060, 1070, 1080, 1090,
+      1200, 1300, 1301, 1302, 6000,
+    ]);
   });
 });
 

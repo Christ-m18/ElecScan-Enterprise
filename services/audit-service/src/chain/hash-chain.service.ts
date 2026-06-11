@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import { createHash } from 'node:crypto';
+import { Injectable } from '@nestjs/common';
 
 /**
  * Append-only audit hash chain.

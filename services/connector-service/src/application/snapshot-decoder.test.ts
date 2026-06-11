@@ -1,5 +1,5 @@
+import { POLLING_BLOCKS, encodeFloat32 } from '@elecscan/shared-modbus';
 import { describe, expect, it } from 'vitest';
-import { encodeFloat32, POLLING_BLOCKS } from '@elecscan/shared-modbus';
 import { SnapshotDecoder } from './snapshot-decoder.js';
 
 function fillRealtimeBlock(): number[] {

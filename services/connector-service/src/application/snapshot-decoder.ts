@@ -1,12 +1,12 @@
-import { Injectable } from '@nestjs/common';
 import {
+  type PollingBlock,
+  REGISTERS,
   decodeFloat32,
   decodeInt64,
   decodeUInt16,
   decodeUInt32,
-  type PollingBlock,
-  REGISTERS,
 } from '@elecscan/shared-modbus';
+import { Injectable } from '@nestjs/common';
 
 export interface SnapshotEntry {
   alias: string;
@@ -48,7 +48,18 @@ export class SnapshotDecoder {
   }
 
   private decodeOne(
-    type: 'UInt16' | 'Int16' | 'UInt32' | 'Int32' | 'UInt64' | 'Int64' | 'Float32' | 'Float64' | 'UTF8' | 'DateTime' | 'IPaddr',
+    type:
+      | 'UInt16'
+      | 'Int16'
+      | 'UInt32'
+      | 'Int32'
+      | 'UInt64'
+      | 'Int64'
+      | 'Float32'
+      | 'Float64'
+      | 'UTF8'
+      | 'DateTime'
+      | 'IPaddr',
     slice: ReadonlyArray<number>,
   ): number | bigint {
     switch (type) {

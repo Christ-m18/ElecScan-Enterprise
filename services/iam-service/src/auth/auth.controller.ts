@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Inject, Post } from '@nestjs/common';
 import { z } from 'zod';
 import { AuthService } from './auth.service.js';
 
@@ -15,7 +15,7 @@ const LoginBody = z.object({
 
 @Controller('/auth')
 export class AuthController {
-  constructor(private readonly auth: AuthService) {}
+  constructor(@Inject(AuthService) private readonly auth: AuthService) {}
 
   @Post('/signup')
   @HttpCode(201)

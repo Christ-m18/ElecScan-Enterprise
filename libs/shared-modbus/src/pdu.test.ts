@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { ModbusError, ModbusErrorCode } from './errors.js';
 import {
+  FC_READ_HOLDING,
+  FC_WRITE_MULTIPLE,
   decodeResponsePdu,
   encodeReadHoldingRequest,
   encodeWriteMultipleRequest,
-  FC_READ_HOLDING,
-  FC_WRITE_MULTIPLE,
 } from './pdu.js';
 
 describe('PDU read request (FC 0x03)', () => {
@@ -29,9 +29,7 @@ describe('PDU write request (FC 0x10)', () => {
   });
 
   it('rejects more than 123 registers', () => {
-    expect(() =>
-      encodeWriteMultipleRequest(300, new Array(124).fill(0)),
-    ).toThrow();
+    expect(() => encodeWriteMultipleRequest(300, new Array(124).fill(0))).toThrow();
   });
 
   it('rejects out-of-range register value', () => {

@@ -6,5 +6,10 @@
     "composite": true
   },
   "include": ["src/**/*"],
-  "exclude": ["**/*.test.ts", "dist"]
+  "exclude": ["**/*.test.ts", "dist"],
+  "references": [
+    { "path": "../../libs/shared-config" },
+    { "path": "../../libs/shared-domain" },
+    { "path": "../../libs/shared-modbus" }
+  ]
 }

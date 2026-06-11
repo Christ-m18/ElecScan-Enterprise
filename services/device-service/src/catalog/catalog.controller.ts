@@ -1,11 +1,11 @@
-import { Controller, Get, Param, NotFoundException } from '@nestjs/common';
 import {
-  findInstruction,
-  findRegister,
   INSTRUCTIONS,
   POLLING_BLOCKS,
   REGISTERS,
+  findInstruction,
+  findRegister,
 } from '@elecscan/shared-modbus';
+import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 
 /**
  * Read-only endpoints exposing the canonical MI-550 catalog.

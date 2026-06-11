@@ -21,7 +21,7 @@
   "scripts": {
     "build": "tsc -b",
     "dev": "tsc -b --watch",
-    "typecheck": "tsc -b --noEmit",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
     "clean": "rm -rf dist"
