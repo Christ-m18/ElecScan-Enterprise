@@ -75,6 +75,10 @@ export class PollingEngine implements OnApplicationShutdown {
     );
   }
 
+  getClient(id: string): ModbusTcpClient | undefined {
+    return this.clients.get(id);
+  }
+
   private async pollBlock(
     deviceId: string,
     client: ModbusTcpClient,
