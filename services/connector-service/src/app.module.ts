@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
+import { type MiddlewareConsumer, Module, type NestModule } from '@nestjs/common';
 import { AlarmController } from './alarms/alarm.controller.js';
 import { AlarmDetector } from './alarms/alarm.detector.js';
 import { AlarmStore } from './alarms/alarm.store.js';
 import { SnapshotDecoder } from './application/snapshot-decoder.js';
+import { RateLimitMiddleware } from './common/rate-limit.middleware.js';
 import { ConfigController } from './config/config.controller.js';
 import { ConfigService } from './config/config.service.js';
 import { PendingApprovalStore } from './config/pending-approval.store.js';
@@ -25,4 +26,8 @@ import { SnapshotStore } from './polling/snapshot.store.js';
     AlarmDetector,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(RateLimitMiddleware).forRoutes('*');
+  }
+}

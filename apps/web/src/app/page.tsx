@@ -44,7 +44,7 @@ export default function HomePage() {
       {/* ── Hero section ────────────────────────────────────────── */}
       <section className="flex flex-1 flex-col items-center justify-center px-8 text-center">
         <div className="mb-2 text-[10px] font-medium uppercase tracking-[4px] text-muted">
-          M1 / Conectividad
+          M1–M10 / Producción
         </div>
         <h1 className="font-ui text-4xl font-bold tracking-wider text-text">
           ELEC<em className="not-italic text-accent">SCAN</em> Enterprise
@@ -81,13 +81,14 @@ export default function HomePage() {
         </div>
 
         {/* Quick-nav tiles */}
-        <div className="mt-6 grid grid-cols-4 gap-3 text-sm">
+        <div className="mt-6 grid grid-cols-5 gap-3 text-sm">
           {(
             [
               { icon: '📊', label: 'Mediciones', href: '/mediciones' },
               { icon: '📋', label: 'Registros', href: '/registros' },
               { icon: '⚙️', label: 'Configuración', href: '/configuracion' },
               { icon: '🔔', label: 'Alarmas', href: '/alarmas' },
+              { icon: '🗺️', label: 'Mapa', href: '/mapa' },
             ] as const
           ).map(({ icon, label, href }) => (
             <Link
@@ -100,11 +101,40 @@ export default function HomePage() {
             </Link>
           ))}
         </div>
+
+        {/* Milestone progress */}
+        <div className="mt-10 w-full max-w-2xl">
+          <p className="mb-3 text-[10px] font-medium uppercase tracking-[3px] text-muted">
+            Milestones completados
+          </p>
+          <div className="grid grid-cols-5 gap-2 text-[10px]">
+            {[
+              { id: 'M1', label: 'Conectividad' },
+              { id: 'M2', label: 'Dashboard' },
+              { id: 'M3', label: 'Config' },
+              { id: 'M4', label: 'Alarmas' },
+              { id: 'M5', label: 'RBAC' },
+              { id: 'M6', label: 'Historian' },
+              { id: 'M7', label: 'ML / IA' },
+              { id: 'M8', label: 'Geoloc.' },
+              { id: 'M9', label: 'Seguridad' },
+              { id: 'M10', label: 'GA' },
+            ].map(({ id, label }) => (
+              <div
+                key={id}
+                className="flex flex-col items-center gap-1 rounded border border-accent/40 bg-accent/5 px-2 py-2"
+              >
+                <span className="font-bold text-accent">{id}</span>
+                <span className="text-muted">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* ── Action bar footer ────────────────────────────────────── */}
       <footer className="action-bar justify-center text-xs text-muted">
-        ElecScan Enterprise &middot; v0.1.0 &middot; M1 Conectividad MI-550
+        ElecScan Enterprise &middot; v0.9.0 &middot; M1–M10 completados
       </footer>
     </main>
   );
