@@ -96,14 +96,35 @@ export default function ReportesPage() {
 
   async function downloadReport(id: string, filename: string) {
     try {
-      const r = await fetch(`${REPORTS_URL}/reports/${id}/download`);
-      const body = (await r.json()) as { content: string; filename: string; format: string };
-      const mime = body.format === 'csv' ? 'text/csv' : 'application/json';
-      const blob = new Blob([body.content], { type: mime });
+      const r = await fetch(`/api/reporting/${id}/download`);
+      const ct = r.headers.get('content-type') ?? '';
+      let blob: Blob;
+      if (
+        ct.includes('application/pdf') ||
+        ct.includes('text/csv') ||
+        (ct.startsWith('application/json') && ct.includes('attachment'))
+      ) {
+        blob = await r.blob();
+      } else {
+        // in-memory JSON fallback: { content, filename, format }
+        const body = (await r.json()) as { content: string; filename: string; format: string };
+        const mime =
+          body.format === 'csv'
+            ? 'text/csv'
+            : body.format === 'pdf'
+              ? 'application/pdf'
+              : 'application/json';
+        const data =
+          body.format === 'pdf'
+            ? Uint8Array.from(atob(body.content), (c) => c.charCodeAt(0))
+            : body.content;
+        blob = new Blob([data], { type: mime });
+      }
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
       a.download = filename;
       a.click();
+      URL.revokeObjectURL(a.href);
     } catch {
       /* silent */
     }
@@ -183,7 +204,7 @@ export default function ReportesPage() {
             </label>
 
             <div className="flex gap-2">
-              {(['csv', 'json'] as const).map((f) => (
+              {(['csv', 'json', 'pdf'] as const).map((f) => (
                 <button
                   key={f}
                   type="button"
@@ -284,7 +305,9 @@ export default function ReportesPage() {
                       {r.status === 'ready' && r.filename && (
                         <button
                           type="button"
-                          onClick={() => void downloadReport(r.id, r.filename ?? '')}
+                          onClick={() =>
+                            void downloadReport(r.id, r.filename ?? `report-${r.id}.${r.format}`)
+                          }
                           className="rounded border border-accent/40 px-2 py-0.5 text-[10px] text-accent transition hover:bg-accent/10"
                         >
                           ↓ Descargar

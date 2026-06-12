@@ -1,4 +1,7 @@
 import { Injectable } from '@nestjs/common';
+// biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
+import { StorageService } from '../storage/storage.service.js';
+import { buildPdf } from './pdf.builder.js';
 import type { Report, ReportType } from './report.entity.js';
 // biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
 import { ReportStore } from './report.store.js';
@@ -37,7 +40,10 @@ interface HistorianRow {
 
 @Injectable()
 export class ReportGenerator {
-  constructor(private readonly store: ReportStore) {}
+  constructor(
+    private readonly store: ReportStore,
+    private readonly storage: StorageService,
+  ) {}
 
   async generate(report: Report): Promise<void> {
     try {
@@ -59,25 +65,12 @@ export class ReportGenerator {
         return;
       }
 
-      if (report.format === 'csv') {
-        const { csv, filename } = this.toCsv(report, body.rows, aliases);
-        report.content = csv;
-        report.filename = filename;
+      if (report.format === 'pdf') {
+        await this.generatePdf(report, body.rows, aliases);
+      } else if (report.format === 'csv') {
+        await this.generateCsv(report, body.rows, aliases);
       } else {
-        report.content = JSON.stringify(
-          {
-            report: {
-              deviceId: report.deviceId,
-              type: report.type,
-              from: report.from,
-              to: report.to,
-            },
-            rows: body.rows,
-          },
-          null,
-          2,
-        );
-        report.filename = `report-${report.deviceId}-${report.type}-${Date.now()}.json`;
+        await this.generateJson(report, body.rows);
       }
 
       report.status = 'ready';
@@ -87,6 +80,78 @@ export class ReportGenerator {
       report.errorMessage = err instanceof Error ? err.message : String(err);
       this.store.updateStatus(report.id, 'error', report.errorMessage);
     }
+  }
+
+  private async generatePdf(
+    report: Report,
+    rows: HistorianRow[],
+    aliases: string[],
+  ): Promise<void> {
+    const pdfBuffer = await buildPdf({
+      deviceId: report.deviceId,
+      type: report.type,
+      from: report.from,
+      to: report.to,
+      rows,
+      aliases,
+    });
+
+    const filename = `reports/${report.deviceId}/${report.id}.pdf`;
+    const storageKey = await this.storage.upload(filename, pdfBuffer, 'application/pdf');
+
+    if (storageKey) {
+      report.filename = storageKey;
+      // Store small base64 snapshot only for in-memory fallback on small PDFs
+      if (pdfBuffer.length < 5_000_000) {
+        report.content = pdfBuffer.toString('base64');
+      }
+    } else {
+      // MinIO unavailable — keep PDF in memory as base64
+      report.content = pdfBuffer.toString('base64');
+      report.filename = `${report.deviceId}-${report.type}-${Date.now()}.pdf`;
+    }
+  }
+
+  private async generateCsv(
+    report: Report,
+    rows: HistorianRow[],
+    aliases: string[],
+  ): Promise<void> {
+    const { csv, filename } = this.toCsv(report, rows, aliases);
+    report.content = csv;
+    report.filename = filename;
+
+    const storageKey = await this.storage.upload(
+      `reports/${report.deviceId}/${report.id}.csv`,
+      Buffer.from(csv, 'utf-8'),
+      'text/csv',
+    );
+    if (storageKey) report.filename = storageKey;
+  }
+
+  private async generateJson(report: Report, rows: HistorianRow[]): Promise<void> {
+    const json = JSON.stringify(
+      {
+        report: {
+          deviceId: report.deviceId,
+          type: report.type,
+          from: report.from,
+          to: report.to,
+        },
+        rows,
+      },
+      null,
+      2,
+    );
+    report.content = json;
+    report.filename = `report-${report.deviceId}-${report.type}-${Date.now()}.json`;
+
+    const storageKey = await this.storage.upload(
+      `reports/${report.deviceId}/${report.id}.json`,
+      Buffer.from(json, 'utf-8'),
+      'application/json',
+    );
+    if (storageKey) report.filename = storageKey;
   }
 
   private bucket(from: string, to: string): string {

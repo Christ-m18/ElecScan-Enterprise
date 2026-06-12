@@ -4,21 +4,24 @@ import { HealthController } from './health/health.controller.js';
 import { ReportGenerator } from './reports/report.generator.js';
 import { ReportStore } from './reports/report.store.js';
 import { ReportsController } from './reports/reports.controller.js';
+import { StorageService } from './storage/storage.service.js';
 
 const DB_URL = process.env.DATABASE_URL ?? 'postgresql://elecscan:elecscan@localhost:5432/elecscan';
 
 @Module({
   controllers: [HealthController, ReportsController],
-  providers: [DatabaseService, ReportStore, ReportGenerator],
+  providers: [DatabaseService, ReportStore, StorageService, ReportGenerator],
 })
 export class AppModule implements OnApplicationBootstrap {
   constructor(
     private readonly db: DatabaseService,
     private readonly store: ReportStore,
+    private readonly storage: StorageService,
   ) {}
 
   async onApplicationBootstrap(): Promise<void> {
     await this.db.connect(DB_URL);
     this.store.setDb(this.db);
+    await this.storage.connect();
   }
 }

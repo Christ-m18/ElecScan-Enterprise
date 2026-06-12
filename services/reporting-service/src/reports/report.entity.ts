@@ -1,4 +1,4 @@
-export type ReportFormat = 'csv' | 'json';
+export type ReportFormat = 'csv' | 'json' | 'pdf';
 export type ReportType = 'realtime' | 'energy' | 'demand';
 export type ReportStatus = 'pending' | 'ready' | 'error';
 
