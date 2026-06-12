@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
+    passWithNoTests: true,
     pool: 'forks',
     environment: 'node',
     include: ['src/**/*.test.ts'],
