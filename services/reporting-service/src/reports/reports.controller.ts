@@ -44,8 +44,8 @@ export class ReportsController {
   }
 
   @Get()
-  list() {
-    return this.store.getAll().map(({ content: _, ...meta }) => meta);
+  async list() {
+    return (await this.store.getAll()).map(({ content: _, ...meta }) => meta);
   }
 
   @Get(':id')

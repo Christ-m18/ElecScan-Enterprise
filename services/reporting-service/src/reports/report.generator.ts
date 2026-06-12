@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Report, ReportType } from './report.entity.js';
+// biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
+import { ReportStore } from './report.store.js';
 
 const HISTORIAN_URL = process.env.HISTORIAN_SERVICE_URL ?? 'http://127.0.0.1:4005';
 
@@ -35,6 +37,8 @@ interface HistorianRow {
 
 @Injectable()
 export class ReportGenerator {
+  constructor(private readonly store: ReportStore) {}
+
   async generate(report: Report): Promise<void> {
     try {
       const aliases = METRIC_ALIASES[report.type];
@@ -51,6 +55,7 @@ export class ReportGenerator {
       if (!body.available) {
         report.status = 'error';
         report.errorMessage = 'TimescaleDB not available';
+        this.store.updateStatus(report.id, 'error', report.errorMessage);
         return;
       }
 
@@ -76,9 +81,11 @@ export class ReportGenerator {
       }
 
       report.status = 'ready';
+      this.store.updateStatus(report.id, 'ready', undefined, report.filename);
     } catch (err) {
       report.status = 'error';
       report.errorMessage = err instanceof Error ? err.message : String(err);
+      this.store.updateStatus(report.id, 'error', report.errorMessage);
     }
   }
 

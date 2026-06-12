@@ -19,12 +19,14 @@
     "@elecscan/shared-config": "workspace:*",
     "@elecscan/shared-domain": "workspace:*",
     "@elecscan/shared-modbus": "workspace:*",
+    "pg": "8.13.3",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.1",
     "zod": "3.23.8"
   },
   "devDependencies": {
     "@types/node": "20.11.30",
+    "@types/pg": "8.11.10",
     "@vitest/coverage-v8": "2.1.8",
     "tsx": "4.19.2",
     "typescript": "5.7.3",

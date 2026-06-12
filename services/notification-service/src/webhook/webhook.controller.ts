@@ -26,7 +26,7 @@ export class WebhookController {
   constructor(private readonly store: WebhookStore) {}
 
   @Post()
-  create(@Body() body: unknown) {
+  async create(@Body() body: unknown) {
     const dto = CreateWebhookSchema.parse(body);
     return this.store.add(dto.url, dto.events, dto.secret);
   }
@@ -38,8 +38,8 @@ export class WebhookController {
 
   @Delete(':id')
   @HttpCode(204)
-  remove(@Param('id') id: string) {
-    if (!this.store.remove(id)) {
+  async remove(@Param('id') id: string) {
+    if (!(await this.store.remove(id))) {
       throw new NotFoundException(`Webhook ${id} not found`);
     }
   }

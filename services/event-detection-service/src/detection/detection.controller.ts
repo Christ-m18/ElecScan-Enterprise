@@ -17,7 +17,7 @@ export class DetectionController {
   }
 
   @Get('history')
-  getHistory() {
+  async getHistory() {
     return this.store.getHistory();
   }
 }

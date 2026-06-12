@@ -14,26 +14,26 @@ export class ProfilesController {
   constructor(private readonly store: ProfileStore) {}
 
   @Get('/:deviceId')
-  getVersions(@Param('deviceId') deviceId: string) {
+  async getVersions(@Param('deviceId') deviceId: string) {
     return this.store.getAll(deviceId);
   }
 
   @Get('/:deviceId/latest')
-  getLatest(@Param('deviceId') deviceId: string) {
-    const v = this.store.getLatest(deviceId);
+  async getLatest(@Param('deviceId') deviceId: string) {
+    const v = await this.store.getLatest(deviceId);
     if (!v) throw new NotFoundException(`No profiles for device ${deviceId}`);
     return v;
   }
 
   @Get('/:deviceId/:versionId')
-  getVersion(@Param('deviceId') deviceId: string, @Param('versionId') versionId: string) {
-    const v = this.store.getById(deviceId, versionId);
+  async getVersion(@Param('deviceId') deviceId: string, @Param('versionId') versionId: string) {
+    const v = await this.store.getById(deviceId, versionId);
     if (!v) throw new NotFoundException(`Version ${versionId} not found`);
     return v;
   }
 
   @Post('/:deviceId')
-  saveVersion(@Param('deviceId') deviceId: string, @Body() dto: SaveProfileDto) {
+  async saveVersion(@Param('deviceId') deviceId: string, @Body() dto: SaveProfileDto) {
     return this.store.save(deviceId, dto.entries, dto.createdBy ?? 'system', dto.note ?? '');
   }
 }
