@@ -4,15 +4,105 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme: MI-550 Original (default) ─────────────────────────────────────── */
+:root,
+[data-theme="mi550"] {
+  --color-bg: #ffffff;
+  --color-surface: #f8f8f8;
+  --color-surface2: #f0f0f0;
+  --color-border: #d0d0d0;
+  --color-dim: #e8e8e8;
+  --color-text: #333333;
+  --color-muted: #777777;
+  --color-accent: #f5a623;
+  --color-accent-h: #e09410;
+  --color-ok: #4caf50;
+  --color-warn: #ff9800;
+  --color-danger: #e53935;
+  --color-nav: #2d2d2d;
+  --color-header: #5a6b7b;
+  --color-phase-a: #e53935;
+  --color-phase-b: #1976d2;
+  --color-phase-c: #f5a623;
+  --color-phase-n: #555555;
+  color-scheme: light;
+}
+
+/* ── Theme: Industrial Moderno (light) ────────────────────────────────────── */
+[data-theme="moderno"] {
+  --color-bg: #f5f6fa;
+  --color-surface: #ffffff;
+  --color-surface2: #e8ebf4;
+  --color-border: #bec8d9;
+  --color-dim: #edf0f7;
+  --color-text: #1a2840;
+  --color-muted: #5a6e8a;
+  --color-accent: #0077cc;
+  --color-accent-h: #005fa3;
+  --color-ok: #27ae60;
+  --color-warn: #f39c12;
+  --color-danger: #c0392b;
+  --color-nav: #1e3a5f;
+  --color-header: #2e6da4;
+  --color-phase-a: #c0392b;
+  --color-phase-b: #0077cc;
+  --color-phase-c: #f39c12;
+  --color-phase-n: #5a6e8a;
+  color-scheme: light;
+}
+
+/* ── Theme: Oscuro Industrial (dark) ──────────────────────────────────────── */
+[data-theme="oscuro"] {
+  --color-bg: #1a1d21;
+  --color-surface: #242830;
+  --color-surface2: #1e2229;
+  --color-border: #3a3f4a;
+  --color-dim: #2c3140;
+  --color-text: #d8dde8;
+  --color-muted: #7a8499;
+  --color-accent: #f5a623;
+  --color-accent-h: #ffbc44;
+  --color-ok: #4caf50;
+  --color-warn: #ff9800;
+  --color-danger: #ef5350;
+  --color-nav: #0d0f12;
+  --color-header: #1e3a5f;
+  --color-phase-a: #ef5350;
+  --color-phase-b: #42a5f5;
+  --color-phase-c: #f5a623;
+  --color-phase-n: #7a8499;
+  color-scheme: dark;
+}
+
+/* ── Theme: Alto Contraste ────────────────────────────────────────────────── */
+[data-theme="contraste"] {
+  --color-bg: #000000;
+  --color-surface: #0a0a0a;
+  --color-surface2: #111111;
+  --color-border: #ffffff;
+  --color-dim: #1a1a1a;
+  --color-text: #ffffff;
+  --color-muted: #cccccc;
+  --color-accent: #ffff00;
+  --color-accent-h: #dddd00;
+  --color-ok: #00ff00;
+  --color-warn: #ff8800;
+  --color-danger: #ff4444;
+  --color-nav: #000000;
+  --color-header: #222222;
+  --color-phase-a: #ff4444;
+  --color-phase-b: #4488ff;
+  --color-phase-c: #ffff00;
+  --color-phase-n: #cccccc;
+  color-scheme: dark;
+}
+
 @layer base {
-  :root {
-    color-scheme: light;
-  }
   html,
   body {
     height: 100%;
-    background: #ffffff;
-    color: #333333;
+    background-color: var(--color-bg);
+    color: var(--color-text);
     font-family: "Inter", system-ui, sans-serif;
   }
 }
@@ -20,12 +110,14 @@
 @layer components {
   /* ── Status bar / top nav ──────────────────────────────────── */
   .nav-bar {
-    @apply flex h-[48px] items-center gap-4 bg-nav px-4 text-white;
+    @apply flex h-[48px] items-center gap-4 px-4 text-white;
+    background-color: var(--color-nav);
   }
 
   /* ── Section / column headers ──────────────────────────────── */
   .col-header {
-    @apply bg-header px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white;
+    @apply px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white;
+    background-color: var(--color-header);
   }
 
   /* ── Data table ────────────────────────────────────────────── */
@@ -33,64 +125,103 @@
     @apply w-full border-collapse text-sm;
   }
   .data-table thead tr th {
-    @apply bg-header px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-white;
+    @apply px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-white;
+    background-color: var(--color-header);
   }
   .data-table tbody tr:nth-child(even) {
-    @apply bg-dim;
+    background-color: var(--color-dim);
   }
   .data-table tbody tr:nth-child(odd) {
-    @apply bg-bg;
+    background-color: var(--color-bg);
   }
   .data-table tbody tr:hover {
-    @apply bg-accent/10;
+    background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
   }
   .data-table tbody tr.selected {
-    @apply bg-accent text-white;
+    background-color: var(--color-accent);
+    color: #000;
   }
   .data-table tbody tr td {
-    @apply border-b border-border px-3 py-2;
+    @apply px-3 py-2;
+    border-bottom: 1px solid var(--color-border);
   }
 
   /* ── Cards / panels ────────────────────────────────────────── */
   .panel {
-    @apply rounded border border-border bg-surface;
+    @apply rounded;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
   }
   .panel-header {
-    @apply border-b border-border bg-header px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white;
+    @apply px-4 py-2 text-sm font-semibold uppercase tracking-wide text-white;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-header);
   }
 
   /* ── Buttons ───────────────────────────────────────────────── */
   .btn-primary {
-    @apply rounded border border-accent bg-accent px-4 py-1.5 text-sm font-semibold text-white transition hover:bg-amber-500;
+    @apply rounded px-4 py-1.5 text-sm font-semibold text-white transition;
+    background-color: var(--color-accent);
+    border: 1px solid var(--color-accent);
+  }
+  .btn-primary:hover {
+    background-color: var(--color-accent-h);
+    border-color: var(--color-accent-h);
   }
   .btn-secondary {
-    @apply rounded border border-border bg-surface2 px-4 py-1.5 text-sm font-medium text-text transition hover:border-accent hover:text-accent;
+    @apply rounded px-4 py-1.5 text-sm font-medium transition;
+    background-color: var(--color-surface2);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+  .btn-secondary:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
   }
   .btn-danger {
-    @apply rounded border border-danger bg-transparent px-4 py-1.5 text-sm font-medium text-danger transition hover:bg-danger hover:text-white;
+    @apply rounded bg-transparent px-4 py-1.5 text-sm font-medium transition;
+    border: 1px solid var(--color-danger);
+    color: var(--color-danger);
+  }
+  .btn-danger:hover {
+    background-color: var(--color-danger);
+    color: #fff;
   }
 
   /* ── Action bar (bottom toolbar) ───────────────────────────── */
   .action-bar {
-    @apply flex items-center gap-2 border-t border-border bg-surface2 px-4 py-2;
+    @apply flex items-center gap-2 px-4 py-2;
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-surface2);
   }
 
   /* ── Status dot ────────────────────────────────────────────── */
   .status-ok {
-    @apply inline-block h-2.5 w-2.5 rounded-full bg-ok;
+    @apply inline-block h-2.5 w-2.5 rounded-full;
+    background-color: var(--color-ok);
   }
   .status-warn {
-    @apply inline-block h-2.5 w-2.5 rounded-full bg-warn;
+    @apply inline-block h-2.5 w-2.5 rounded-full;
+    background-color: var(--color-warn);
   }
   .status-err {
-    @apply inline-block h-2.5 w-2.5 rounded-full bg-danger;
+    @apply inline-block h-2.5 w-2.5 rounded-full;
+    background-color: var(--color-danger);
   }
 
   /* ── Form inputs ───────────────────────────────────────────── */
   .field-input {
-    @apply w-full rounded border border-border bg-bg px-3 py-2 text-sm text-text outline-none focus:border-accent focus:ring-1 focus:ring-accent/30;
+    @apply w-full rounded px-3 py-2 text-sm outline-none;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+  .field-input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
   }
   .field-label {
-    @apply block text-xs font-medium uppercase tracking-wide text-muted;
+    @apply block text-xs font-medium uppercase tracking-wide;
+    color: var(--color-muted);
   }
 }
