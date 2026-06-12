@@ -4,13 +4,18 @@ import {
   type OnApplicationBootstrap,
   type OnApplicationShutdown,
 } from '@nestjs/common';
+// biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
+import { NatsService } from '../nats/nats.service.js';
 import { evaluateCondition } from './alarm.entity.js';
 // biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
 import { AlarmStore } from './alarm.store.js';
 
 const INGEST_URL = process.env.INGEST_SERVICE_URL ?? 'http://127.0.0.1:4004';
-const EVAL_INTERVAL_MS = 5_000;
+const EVAL_INTERVAL_MS = 30_000; // fallback poll when NATS unavailable
 const ESCALATION_CHECK_MS = 30_000;
+const NATS_STREAM = 'TELEMETRY';
+const NATS_SUBJECT = 'telemetry.normalized.v1';
+const NATS_DURABLE = 'alarm-svc';
 
 interface NormalizedSnapshot {
   deviceId: string;
@@ -23,9 +28,18 @@ export class AlarmDetector implements OnApplicationBootstrap, OnApplicationShutd
   private evalTimer: NodeJS.Timeout | null = null;
   private escalationTimer: NodeJS.Timeout | null = null;
 
-  constructor(private readonly store: AlarmStore) {}
+  constructor(
+    private readonly store: AlarmStore,
+    private readonly nats: NatsService,
+  ) {}
 
   onApplicationBootstrap(): void {
+    // NATS subscription (primary path — real-time per-device evaluation)
+    void this.nats.subscribe(NATS_STREAM, NATS_SUBJECT, NATS_DURABLE, (data) => {
+      void this.evaluateSnapshot(data as NormalizedSnapshot);
+    });
+
+    // HTTP poll fallback (reduced frequency, only when NATS unavailable)
     this.evalTimer = setInterval(() => void this.evaluate(), EVAL_INTERVAL_MS);
     this.escalationTimer = setInterval(() => this.checkEscalations(), ESCALATION_CHECK_MS);
   }
@@ -36,34 +50,36 @@ export class AlarmDetector implements OnApplicationBootstrap, OnApplicationShutd
   }
 
   private async evaluate(): Promise<void> {
+    if (this.nats.available) return; // NATS is handling real-time evaluation
     try {
       const r = await fetch(`${INGEST_URL}/ingest/snapshots`);
       if (!r.ok) return;
       const snaps = (await r.json()) as NormalizedSnapshot[];
-      const byDevice = new Map<string, NormalizedSnapshot>(snaps.map((s) => [s.deviceId, s]));
-
-      for (const rule of this.store.getRules()) {
-        if (!rule.enabled) continue;
-        const snap = byDevice.get(rule.deviceId);
-        const val = snap?.values[rule.alias];
-        if (val === undefined) {
-          this.store.clear(rule.id, rule.deviceId);
-          continue;
-        }
-        const triggered = evaluateCondition(val, rule.condition, rule.threshold);
-        if (triggered) {
-          const inst = this.store.raise(rule, val);
-          if (inst) {
-            this.logger.warn(
-              `[ALARM/${rule.severity.toUpperCase()}] ${rule.name}: ${rule.alias}=${val} ${rule.condition} ${rule.threshold}`,
-            );
-          }
-        } else {
-          this.store.clear(rule.id, rule.deviceId);
-        }
-      }
+      for (const snap of snaps) await this.evaluateSnapshot(snap);
     } catch {
       // ingest unavailable — silent
+    }
+  }
+
+  private async evaluateSnapshot(snap: NormalizedSnapshot): Promise<void> {
+    const rules = this.store.getRules().filter((r) => r.deviceId === snap.deviceId && r.enabled);
+    for (const rule of rules) {
+      const val = snap.values[rule.alias];
+      if (val === undefined) {
+        await this.store.clear(rule.id, rule.deviceId);
+        continue;
+      }
+      const triggered = evaluateCondition(val, rule.condition, rule.threshold);
+      if (triggered) {
+        const inst = await this.store.raise(rule, val);
+        if (inst) {
+          this.logger.warn(
+            `[ALARM/${rule.severity.toUpperCase()}] ${rule.name}: ${rule.alias}=${val} ${rule.condition} ${rule.threshold}`,
+          );
+        }
+      } else {
+        await this.store.clear(rule.id, rule.deviceId);
+      }
     }
   }
 
@@ -75,7 +91,7 @@ export class AlarmDetector implements OnApplicationBootstrap, OnApplicationShutd
       if (!rule) continue;
       const age = now - new Date(inst.raisedAt).getTime();
       if (age >= rule.escalateAfterMs) {
-        this.store.markEscalated(inst.id);
+        void this.store.markEscalated(inst.id);
         this.logger.warn(
           `[ESCALATED] ${inst.ruleName} on ${inst.deviceId} (${Math.round(age / 1000)}s unacked)`,
         );

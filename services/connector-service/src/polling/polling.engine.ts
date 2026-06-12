@@ -5,7 +5,11 @@ import { Injectable, Logger, type OnApplicationShutdown } from '@nestjs/common';
 import { SnapshotDecoder } from '../application/snapshot-decoder.js';
 import type { DeviceConfig, DeviceStatus } from '../devices/device.entity.js';
 // biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
+import { NatsService } from '../nats/nats.service.js';
+// biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
 import { SnapshotStore } from './snapshot.store.js';
+
+const NATS_SUBJECT = 'telemetry.normalized.v1';
 
 @Injectable()
 export class PollingEngine implements OnApplicationShutdown {
@@ -17,6 +21,7 @@ export class PollingEngine implements OnApplicationShutdown {
   constructor(
     private readonly decoder: SnapshotDecoder,
     private readonly snapshots: SnapshotStore,
+    private readonly nats: NatsService,
   ) {}
 
   onApplicationShutdown(): void {
@@ -92,11 +97,21 @@ export class PollingEngine implements OnApplicationShutdown {
       const entries = this.decoder.decodeBlock(block, response.registers);
       this.snapshots.update(deviceId, entries);
       this.setStatus(deviceId, true, null);
+      void this.publishSnapshot(deviceId);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       this.setStatus(deviceId, false, msg);
       this.logger.warn(`[${deviceId}] block ${block.id}: ${msg}`);
     }
+  }
+
+  private async publishSnapshot(deviceId: string): Promise<void> {
+    const latest = this.snapshots.getLatest(deviceId);
+    const values: Record<string, number> = {};
+    for (const [alias, sv] of Object.entries(latest.values)) {
+      values[alias] = typeof sv.value === 'bigint' ? Number(sv.value) : sv.value;
+    }
+    await this.nats.publish(NATS_SUBJECT, { deviceId, ts: latest.updatedAt, values });
   }
 
   private setStatus(id: string, connected: boolean, error: string | null): void {

@@ -4,13 +4,18 @@ import {
   type OnApplicationBootstrap,
   type OnApplicationShutdown,
 } from '@nestjs/common';
+// biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
+import { NatsService } from '../nats/nats.service.js';
 import type { PqEvent, PqEventType, PqPhase } from './event.entity.js';
 // biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
 import { EventStore } from './event.store.js';
 import { THRESHOLDS } from './pq-thresholds.js';
 
 const INGEST_URL = process.env.INGEST_SERVICE_URL ?? 'http://127.0.0.1:4004';
-const POLL_MS = 5_000;
+const POLL_MS = 30_000; // fallback poll when NATS unavailable
+const NATS_STREAM = 'TELEMETRY';
+const NATS_SUBJECT = 'telemetry.normalized.v1';
+const NATS_DURABLE = 'event-detection-svc';
 
 interface NormalizedSnapshot {
   deviceId: string;
@@ -30,9 +35,18 @@ export class DetectorService implements OnApplicationBootstrap, OnApplicationShu
   private timer: ReturnType<typeof setInterval> | null = null;
   private readonly activeKeys = new Map<string, string>();
 
-  constructor(private readonly store: EventStore) {}
+  constructor(
+    private readonly store: EventStore,
+    private readonly nats: NatsService,
+  ) {}
 
   onApplicationBootstrap(): void {
+    // NATS subscription (primary path — real-time)
+    void this.nats.subscribe(NATS_STREAM, NATS_SUBJECT, NATS_DURABLE, (data) => {
+      this.detect(data as NormalizedSnapshot);
+    });
+
+    // HTTP poll fallback (keeps working if NATS unavailable)
     void this.poll();
     this.timer = setInterval(() => void this.poll(), POLL_MS);
   }
@@ -42,6 +56,7 @@ export class DetectorService implements OnApplicationBootstrap, OnApplicationShu
   }
 
   private async poll(): Promise<void> {
+    if (this.nats.available) return; // NATS is handling detection
     try {
       const r = await fetch(`${INGEST_URL}/ingest/snapshots`);
       if (!r.ok) return;

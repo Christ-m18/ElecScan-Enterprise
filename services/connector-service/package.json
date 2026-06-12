@@ -20,6 +20,7 @@
     "@elecscan/shared-domain": "workspace:*",
     "@elecscan/shared-events": "workspace:*",
     "@elecscan/shared-modbus": "workspace:*",
+    "nats": "2.29.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.1",
     "zod": "3.23.8"
