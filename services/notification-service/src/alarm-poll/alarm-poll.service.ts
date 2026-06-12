@@ -4,11 +4,12 @@ import {
   type OnApplicationBootstrap,
   type OnApplicationShutdown,
 } from '@nestjs/common';
+import { sendEmail } from '../channels/email.channel.js';
 import { sendTelegram } from '../channels/telegram.channel.js';
 // biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
 import { WebhookStore } from '../webhook/webhook.store.js';
 
-const CONNECTOR_URL = process.env.CONNECTOR_SERVICE_URL ?? 'http://127.0.0.1:4003';
+const ALARM_URL = process.env.ALARM_SERVICE_URL ?? 'http://127.0.0.1:4007';
 const POLL_MS = 10_000;
 
 interface ActiveAlarm {
@@ -42,7 +43,7 @@ export class AlarmPollService implements OnApplicationBootstrap, OnApplicationSh
 
   private async poll(): Promise<void> {
     try {
-      const r = await fetch(`${CONNECTOR_URL}/alarms/active`);
+      const r = await fetch(`${ALARM_URL}/alarms/active`);
       if (!r.ok) return;
       const alarms = (await r.json()) as ActiveAlarm[];
 
@@ -64,13 +65,22 @@ export class AlarmPollService implements OnApplicationBootstrap, OnApplicationSh
   private async dispatch(event: 'alarm.raised' | 'alarm.acked', alarm: ActiveAlarm): Promise<void> {
     if (event === 'alarm.raised') {
       const icon = alarm.severity === 'critical' ? '🔴' : alarm.severity === 'warning' ? '🟡' : 'ℹ️';
-      await sendTelegram(
+      const tgMsg =
         `${icon} <b>ElecScan Alarm</b>\n` +
-          `Device: <code>${alarm.deviceId}</code>\n` +
-          `Rule: ${alarm.ruleName}\n` +
-          `${alarm.alias} ${alarm.condition} ${alarm.threshold} (actual: ${alarm.value.toFixed(3)})\n` +
-          `Severity: ${alarm.severity}`,
-      );
+        `Device: <code>${alarm.deviceId}</code>\n` +
+        `Rule: ${alarm.ruleName}\n` +
+        `${alarm.alias} ${alarm.condition} ${alarm.threshold} (actual: ${alarm.value.toFixed(3)})\n` +
+        `Severity: ${alarm.severity}`;
+      const emailHtml =
+        `<h2>${icon} ElecScan Alarm — ${alarm.severity.toUpperCase()}</h2>` +
+        `<p><b>Rule:</b> ${alarm.ruleName}</p>` +
+        `<p><b>Device:</b> ${alarm.deviceId}</p>` +
+        `<p><b>Condition:</b> ${alarm.alias} ${alarm.condition} ${alarm.threshold} (actual: <b>${alarm.value.toFixed(3)}</b>)</p>` +
+        `<p><b>Raised at:</b> ${alarm.raisedAt}</p>`;
+      await Promise.allSettled([
+        sendTelegram(tgMsg),
+        sendEmail(`[ElecScan] ${alarm.severity.toUpperCase()} alarm: ${alarm.ruleName}`, emailHtml),
+      ]);
     }
 
     const subs = this.webhooks.getByEvent(event);

@@ -60,8 +60,14 @@ const SEVERITY_DOT: Record<AlarmSeverity, string> = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(`/api/connector${path}`, init);
+async function connectorFetch<T>(path: string): Promise<T> {
+  const r = await fetch(`/api/connector${path}`, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+  return r.json() as Promise<T>;
+}
+
+async function alarmFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const r = await fetch(`/api/alarm${path}`, init);
   if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
   return r.json() as Promise<T>;
 }
@@ -107,9 +113,9 @@ export default function AlarmasPage() {
   const loadAll = useCallback(async () => {
     try {
       const [devList, activeList, ruleList] = await Promise.all([
-        apiFetch<Device[]>('/devices'),
-        apiFetch<ActiveAlarm[]>('/alarms/active'),
-        apiFetch<AlarmRule[]>('/alarms/rules'),
+        connectorFetch<Device[]>('/devices'),
+        alarmFetch<ActiveAlarm[]>('/active'),
+        alarmFetch<AlarmRule[]>('/rules'),
       ]);
       setDevices(devList);
       setActive(activeList);
@@ -130,7 +136,7 @@ export default function AlarmasPage() {
 
   async function ackAlarm(alarmId: string) {
     try {
-      await apiFetch(`/alarms/active/${alarmId}/ack`, {
+      await alarmFetch(`/active/${alarmId}/ack`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ by: 'operator' }),
@@ -145,7 +151,7 @@ export default function AlarmasPage() {
     e.preventDefault();
     setSaving(true);
     try {
-      await apiFetch('/alarms/rules', {
+      await alarmFetch('/rules', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
@@ -161,7 +167,7 @@ export default function AlarmasPage() {
 
   async function deleteRule(id: string) {
     try {
-      await apiFetch(`/alarms/rules/${id}`, { method: 'DELETE' });
+      await alarmFetch(`/rules/${id}`, { method: 'DELETE' });
       await loadAll();
     } catch {
       // non-fatal
@@ -170,7 +176,7 @@ export default function AlarmasPage() {
 
   async function toggleRule(rule: AlarmRule) {
     try {
-      await apiFetch(`/alarms/rules/${rule.id}`, {
+      await alarmFetch(`/rules/${rule.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ enabled: !rule.enabled }),
