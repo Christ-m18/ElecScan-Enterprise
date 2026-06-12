@@ -1,5 +1,5 @@
 import { Injectable, Logger, type OnApplicationShutdown } from '@nestjs/common';
-import { AckPolicy, DeliverPolicy, type NatsConnection, StorageType, connect } from 'nats';
+import { AckPolicy, DeliverPolicy, type NatsConnection, connect } from 'nats';
 
 @Injectable()
 export class NatsService implements OnApplicationShutdown {
@@ -14,35 +14,13 @@ export class NatsService implements OnApplicationShutdown {
   async connect(url: string): Promise<void> {
     try {
       this.nc = await connect({ servers: url });
-      const jsm = await this.nc.jetstreamManager();
-      try {
-        await jsm.streams.info('ALARMS');
-      } catch {
-        await jsm.streams.add({
-          name: 'ALARMS',
-          subjects: ['alarm.>'],
-          storage: StorageType.Memory,
-          max_age: 86_400_000_000_000,
-          max_msgs_per_subject: 500,
-        });
-      }
       this._available = true;
       this.logger.log('NATS JetStream connected');
     } catch (err) {
       this._available = false;
       this.logger.warn(
-        `NATS unavailable — polling fallback active: ${err instanceof Error ? err.message : err}`,
+        `NATS unavailable — HTTP poll active: ${err instanceof Error ? err.message : err}`,
       );
-    }
-  }
-
-  async publish(subject: string, data: unknown): Promise<void> {
-    if (!this.nc || !this._available) return;
-    try {
-      const js = this.nc.jetstream();
-      await js.publish(subject, new TextEncoder().encode(JSON.stringify(data)));
-    } catch (err) {
-      this.logger.warn(`NATS publish error: ${err instanceof Error ? err.message : err}`);
     }
   }
 

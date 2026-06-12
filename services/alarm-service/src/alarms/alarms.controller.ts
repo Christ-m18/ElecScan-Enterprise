@@ -12,6 +12,8 @@ import {
 import type { AlarmCondition, AlarmSeverity } from './alarm.entity.js';
 // biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
 import { AlarmStore } from './alarm.store.js';
+// biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
+import { MaintenanceStore } from './maintenance.store.js';
 
 interface CreateRuleDto {
   name: string;
@@ -28,9 +30,20 @@ interface AckDto {
   by?: string;
 }
 
+interface CreateWindowDto {
+  deviceId: string;
+  label: string;
+  startsAt: string;
+  endsAt: string;
+  createdBy?: string;
+}
+
 @Controller()
 export class AlarmsController {
-  constructor(private readonly store: AlarmStore) {}
+  constructor(
+    private readonly store: AlarmStore,
+    private readonly maintenance: MaintenanceStore,
+  ) {}
 
   // ── Rules ──────────────────────────────────────────────────────────────────
 
@@ -40,7 +53,7 @@ export class AlarmsController {
   }
 
   @Post('rules')
-  createRule(@Body() dto: CreateRuleDto) {
+  async createRule(@Body() dto: CreateRuleDto) {
     const base = {
       name: dto.name,
       deviceId: dto.deviceId,
@@ -56,16 +69,16 @@ export class AlarmsController {
   }
 
   @Patch('rules/:id')
-  updateRule(@Param('id') id: string, @Body() dto: Partial<CreateRuleDto>) {
-    const rule = this.store.updateRule(id, dto);
+  async updateRule(@Param('id') id: string, @Body() dto: Partial<CreateRuleDto>) {
+    const rule = await this.store.updateRule(id, dto);
     if (!rule) throw new NotFoundException(`Rule ${id} not found`);
     return rule;
   }
 
   @Delete('rules/:id')
   @HttpCode(204)
-  deleteRule(@Param('id') id: string) {
-    const ok = this.store.deleteRule(id);
+  async deleteRule(@Param('id') id: string) {
+    const ok = await this.store.deleteRule(id);
     if (!ok) throw new NotFoundException(`Rule ${id} not found`);
   }
 
@@ -77,8 +90,8 @@ export class AlarmsController {
   }
 
   @Post('active/:id/ack')
-  acknowledgeAlarm(@Param('id') id: string, @Body() dto: AckDto) {
-    const inst = this.store.acknowledge(id, dto.by ?? 'system');
+  async acknowledgeAlarm(@Param('id') id: string, @Body() dto: AckDto) {
+    const inst = await this.store.acknowledge(id, dto.by ?? 'system');
     if (!inst) throw new NotFoundException(`Active alarm ${id} not found`);
     return inst;
   }
@@ -88,5 +101,30 @@ export class AlarmsController {
   @Get('history')
   getHistory() {
     return this.store.getHistory();
+  }
+
+  // ── Maintenance windows ────────────────────────────────────────────────────
+
+  @Get('maintenance')
+  getMaintenanceWindows() {
+    return this.maintenance.getAll();
+  }
+
+  @Post('maintenance')
+  async createMaintenanceWindow(@Body() dto: CreateWindowDto) {
+    return this.maintenance.add({
+      deviceId: dto.deviceId,
+      label: dto.label,
+      startsAt: dto.startsAt,
+      endsAt: dto.endsAt,
+      createdBy: dto.createdBy ?? 'system',
+    });
+  }
+
+  @Delete('maintenance/:id')
+  @HttpCode(204)
+  async deleteMaintenanceWindow(@Param('id') id: string) {
+    const ok = await this.maintenance.remove(id);
+    if (!ok) throw new NotFoundException(`Maintenance window ${id} not found`);
   }
 }
