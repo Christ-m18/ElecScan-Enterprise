@@ -11,7 +11,7 @@ const nextConfig = {
       "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https://*.openstreetmap.org https://*.tile.openstreetmap.org",
-      "connect-src 'self' http://127.0.0.1:4000 http://127.0.0.1:4003 http://127.0.0.1:4005 http://127.0.0.1:4009 http://127.0.0.1:4010 http://127.0.0.1:4011",
+      "connect-src 'self' http://127.0.0.1:4000 http://127.0.0.1:4003 http://127.0.0.1:4004 http://127.0.0.1:4005 http://127.0.0.1:4006 http://127.0.0.1:4008 http://127.0.0.1:4009 http://127.0.0.1:4010 http://127.0.0.1:4011",
       "font-src 'self'",
       "frame-ancestors 'none'",
     ].join('; ');

@@ -4,6 +4,7 @@ import {
   type OnApplicationBootstrap,
   type OnApplicationShutdown,
 } from '@nestjs/common';
+import { sendTelegram } from '../channels/telegram.channel.js';
 // biome-ignore lint/style/useImportType: value import required for NestJS emitDecoratorMetadata
 import { WebhookStore } from '../webhook/webhook.store.js';
 
@@ -61,6 +62,17 @@ export class AlarmPollService implements OnApplicationBootstrap, OnApplicationSh
   }
 
   private async dispatch(event: 'alarm.raised' | 'alarm.acked', alarm: ActiveAlarm): Promise<void> {
+    if (event === 'alarm.raised') {
+      const icon = alarm.severity === 'critical' ? '🔴' : alarm.severity === 'warning' ? '🟡' : 'ℹ️';
+      await sendTelegram(
+        `${icon} <b>ElecScan Alarm</b>\n` +
+          `Device: <code>${alarm.deviceId}</code>\n` +
+          `Rule: ${alarm.ruleName}\n` +
+          `${alarm.alias} ${alarm.condition} ${alarm.threshold} (actual: ${alarm.value.toFixed(3)})\n` +
+          `Severity: ${alarm.severity}`,
+      );
+    }
+
     const subs = this.webhooks.getByEvent(event);
     if (!subs.length) return;
 
