@@ -81,14 +81,17 @@ export default function HomePage() {
         </div>
 
         {/* Quick-nav tiles */}
-        <div className="mt-6 grid grid-cols-5 gap-3 text-sm">
+        <div className="mt-6 grid grid-cols-4 gap-3 text-sm sm:grid-cols-5 lg:grid-cols-8">
           {(
             [
               { icon: '📊', label: 'Mediciones', href: '/mediciones' },
               { icon: '📋', label: 'Registros', href: '/registros' },
-              { icon: '⚙️', label: 'Configuración', href: '/configuracion' },
+              { icon: '⚙️', label: 'Config', href: '/configuracion' },
               { icon: '🔔', label: 'Alarmas', href: '/alarmas' },
+              { icon: '⚡', label: 'Eventos PQ', href: '/eventos' },
+              { icon: '🤖', label: 'Insights ML', href: '/insights' },
               { icon: '🗺️', label: 'Mapa', href: '/mapa' },
+              { icon: '📄', label: 'Reportes', href: '/reportes' },
             ] as const
           ).map(({ icon, label, href }) => (
             <Link
