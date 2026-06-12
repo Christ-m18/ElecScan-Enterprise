@@ -1,8 +1,10 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -15,22 +17,19 @@ export default function LoginPage() {
     try {
       const apiBase =
         process.env.NEXT_PUBLIC_IAM_BASE_URL ??
-        (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:4001');
-      const res = await fetch(`${apiBase}/auth/login`, {
+        (process.env.NODE_ENV === 'production'
+          ? 'https://elecscan-iam.vercel.app'
+          : 'http://localhost:4001');
+      const res = await fetch(`${apiBase}/iam/auth/login`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
       if (!res.ok) {
         setError('Credenciales inválidas');
-        return;
+      } else {
+        router.push('/');
       }
-      const data = (await res.json()) as { accessToken: string; refreshToken: string };
-      document.cookie = `access_token=${data.accessToken}; path=/; SameSite=Strict; max-age=900`;
-      document.cookie = `refresh_token=${data.refreshToken}; path=/; SameSite=Strict; max-age=2592000`;
-
-      const params = new URLSearchParams(window.location.search);
-      window.location.href = params.get('from') ?? '/';
     } catch {
       setError('No se pudo contactar al servicio de identidad');
     } finally {
@@ -141,7 +140,7 @@ export default function LoginPage() {
             </button>
 
             <p className="mt-4 text-center font-mono text-[10px] text-muted">
-              ElecScan Enterprise v0.9.0 — RBAC activo
+              Bootstrap M0 — 2FA y SSO disponibles en M5
             </p>
           </form>
 

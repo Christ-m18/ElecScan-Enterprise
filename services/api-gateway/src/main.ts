@@ -18,11 +18,6 @@ async function bootstrap(): Promise<void> {
 
   app.enableCors();
   app.setGlobalPrefix('api');
-
-  const fastify = app.getHttpAdapter().getInstance();
-  const { jwtGuard } = await import('./auth/jwt.guard.js');
-  fastify.addHook('preHandler', jwtGuard);
-
   await app.listen({ port: env.PORT, host: env.HOST });
   console.info(`[api-gateway] listening on ${env.HOST}:${env.PORT}`);
 }

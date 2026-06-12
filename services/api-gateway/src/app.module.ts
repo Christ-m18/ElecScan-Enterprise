@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { type MiddlewareConsumer, Module, type NestModule } from '@nestjs/common';
 import { HealthController } from './health/health.controller.js';
-import { ProxyController } from './proxy/proxy.controller.js';
+import { ProxyMiddleware } from './proxy/proxy.middleware.js';
 
-@Module({
-  controllers: [HealthController, ProxyController],
-})
-export class AppModule {}
+@Module({ controllers: [HealthController] })
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(ProxyMiddleware).forRoutes('*');
+  }
+}
