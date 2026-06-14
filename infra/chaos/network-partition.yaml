@@ -1,0 +1,89 @@
+# LitmusChaos — Network Partition Experiment
+# Simulates network isolation between zones to validate fault tolerance.
+#
+# Prerequisites:
+#   kubectl apply -f https://hub.litmuschaos.io/api/chaos/3.0.0?file=charts/generic/pod-network-partition/experiment.yaml
+#
+# Run:
+#   kubectl apply -f infra/chaos/network-partition.yaml
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: elecscan-network-partition
+  namespace: elecscan
+  labels:
+    app.kubernetes.io/part-of: elecscan
+    chaos-scenario: network-partition
+spec:
+  appinfo:
+    appns: elecscan
+    applabel: app.kubernetes.io/name=connector-service
+    appkind: deployment
+  engineState: active
+  chaosServiceAccount: litmus-admin
+  monitoring: true
+  jobCleanUpPolicy: retain
+
+  experiments:
+    # Partition connector-service from database (simulates Zone 2 ↔ DB split)
+    - name: pod-network-partition
+      spec:
+        components:
+          env:
+            - name: TOTAL_CHAOS_DURATION
+              value: "120"
+            - name: DESTINATION_IPS
+              value: ""
+            - name: DESTINATION_HOSTS
+              value: "elecscan-postgresql.elecscan.svc.cluster.local"
+            - name: NETWORK_INTERFACE
+              value: eth0
+            - name: POLICY_TYPES
+              value: '["Egress"]'
+        probe:
+          - name: gateway-still-serves
+            type: httpProbe
+            httpProbe/inputs:
+              url: http://elecscan-api-gateway.elecscan.svc.cluster.local:4000/health
+              method:
+                get:
+                  criteria: ==
+                  responseCode: "200"
+              insecureSkipVerify: true
+            mode: Continuous
+            runProperties:
+              probeTimeout: 5s
+              interval: 15s
+              retry: 3
+
+    # Partition ingest-service from NATS (simulates event bus failure)
+    - name: pod-network-partition
+      spec:
+        components:
+          env:
+            - name: TOTAL_CHAOS_DURATION
+              value: "90"
+            - name: DESTINATION_HOSTS
+              value: "elecscan-nats.elecscan.svc.cluster.local"
+            - name: NETWORK_INTERFACE
+              value: eth0
+            - name: POLICY_TYPES
+              value: '["Egress"]'
+            - name: APP_LABEL
+              value: app.kubernetes.io/name=ingest-service
+        probe:
+          - name: ingest-graceful-fallback
+            type: httpProbe
+            httpProbe/inputs:
+              url: http://elecscan-ingest-service.elecscan.svc.cluster.local:4004/ingest/status
+              method:
+                get:
+                  criteria: ==
+                  responseCode: "200"
+              insecureSkipVerify: true
+            mode: OnChaos
+            runProperties:
+              probeTimeout: 10s
+              interval: 20s
+              retry: 5
