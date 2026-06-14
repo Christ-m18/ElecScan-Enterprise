@@ -27,7 +27,7 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       });
       if (!res.ok) {
-        setError('Credenciales inv\xe1lidas');
+        setError('Credenciales inv\u00e1lidas');
       } else {
         const { accessToken, refreshToken } = (await res.json()) as {
           accessToken: string;
@@ -35,6 +35,8 @@ export default function LoginPage() {
         };
         localStorage.setItem('access_token', accessToken);
         localStorage.setItem('refresh_token', refreshToken);
+        document.cookie = `access_token=${accessToken}; path=/; max-age=${15 * 60}; SameSite=Lax`;
+        document.cookie = `refresh_token=${refreshToken}; path=/; max-age=${30 * 24 * 3600}; SameSite=Lax`;
         router.push('/');
       }
     } catch {
@@ -46,7 +48,6 @@ export default function LoginPage() {
 
   return (
     <main className="flex min-h-screen flex-col bg-bg">
-      {/* Top nav bar */}
       <header className="flex h-[48px] items-center gap-3 bg-nav px-4 text-white">
         <div className="flex h-7 w-7 items-center justify-center rounded border border-white/30">
           <svg
@@ -62,7 +63,7 @@ export default function LoginPage() {
           </svg>
         </div>
         <span className="text-sm font-bold tracking-[3px] uppercase">
-          ELEC<em className="not-italic text-accent">SCAN</em>{" "}
+          ELEC<em className="not-italic text-accent">SCAN</em>{' '}
           <span className="text-[10px] font-normal text-white/50">Enterprise</span>
         </span>
         <div className="ml-auto flex items-center gap-3 text-xs">
@@ -99,7 +100,7 @@ export default function LoginPage() {
           >
             <div className="mb-5">
               <label className="field-label mb-1" htmlFor="email">
-                Correo electr\xf3nico
+                Correo electr\u00f3nico
               </label>
               <input
                 id="email"
@@ -114,7 +115,7 @@ export default function LoginPage() {
             </div>
             <div className="mb-5">
               <label className="field-label mb-1" htmlFor="password">
-                Contrase\xf1a
+                Contrase\u00f1a
               </label>
               <input
                 id="password"
