@@ -1,0 +1,37 @@
+# WireGuard VPN — Zone 2 Gateway (connector-service host)
+# Secures Modbus TCP traffic between Zone 2 (connector) and Zone 3 (MI-550 analyzers)
+#
+# Deployment:
+#   1. Generate keys:  wg genkey | tee privatekey | wg pubkey > publickey
+#   2. Replace placeholders below with actual keys and IPs
+#   3. Copy to /etc/wireguard/wg0.conf on the connector gateway
+#   4. Enable:  systemctl enable --now wg-quick@wg0
+#
+# IEC 62443-3-3 SL2: All Modbus TCP traffic on isolated VLAN with WireGuard overlay
+
+[Interface]
+# Zone 2 gateway — connector-service host
+Address    = 10.200.0.1/24
+ListenPort = 51820
+PrivateKey = ${WG_GATEWAY_PRIVATE_KEY}
+
+# Drop all traffic not coming through the tunnel
+PostUp   = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+
+# --- MI-550 Analyzer Peers ---
+# Add one [Peer] block per MI-550 device or per-site aggregation point.
+
+[Peer]
+# MI-550 Site A — Modbus Unit ID 1-10
+PublicKey  = ${WG_SITE_A_PUBLIC_KEY}
+AllowedIPs = 10.200.0.10/32
+Endpoint   = ${SITE_A_PUBLIC_IP}:51820
+PersistentKeepalive = 25
+
+[Peer]
+# MI-550 Site B — Modbus Unit ID 11-20
+PublicKey  = ${WG_SITE_B_PUBLIC_KEY}
+AllowedIPs = 10.200.0.11/32
+Endpoint   = ${SITE_B_PUBLIC_IP}:51820
+PersistentKeepalive = 25
