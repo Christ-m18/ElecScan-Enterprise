@@ -1,0 +1,33 @@
+{{- if .Values.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "elecscan.name" . }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "elecscan.labels" (dict "svc" "ingress" "root" .) | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ include "elecscan.fullname" (dict "svc" .backend "root" $) }}
+                port:
+                  name: http
+          {{- end }}
+    {{- end }}
+{{- end }}
