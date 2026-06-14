@@ -1,0 +1,37 @@
+# ElecScan Enterprise — ArgoCD App-of-Apps
+# Manages all environment deployments from a single root Application.
+#
+# Deploy:
+#   kubectl apply -f infra/argocd/app-of-apps.yaml
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: elecscan-root
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: elecscan
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Christ-m18/ElecScan-Enterprise.git
+    targetRevision: main
+    path: infra/argocd/apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        maxDuration: 3m0s
+        factor: 2
