@@ -1,0 +1,24 @@
+# WireGuard VPN — Zone 3 Site Peer (MI-550 analyzer network)
+# Installed on the edge gateway at each customer site.
+#
+# Deployment:
+#   1. Generate keys:  wg genkey | tee privatekey | wg pubkey > publickey
+#   2. Share public key with Zone 2 gateway admin
+#   3. Replace placeholders and copy to /etc/wireguard/wg0.conf
+#   4. Enable:  systemctl enable --now wg-quick@wg0
+
+[Interface]
+# Site edge gateway — connects local MI-550 devices to Zone 2
+Address    = 10.200.0.10/32
+PrivateKey = ${WG_SITE_PRIVATE_KEY}
+
+# Ensure Modbus traffic from local MI-550 devices routes through tunnel
+PostUp   = ip route add 10.200.0.0/24 dev %i
+PostDown = ip route del 10.200.0.0/24 dev %i
+
+[Peer]
+# Zone 2 gateway (connector-service host)
+PublicKey  = ${WG_GATEWAY_PUBLIC_KEY}
+AllowedIPs = 10.200.0.0/24
+Endpoint   = ${GATEWAY_PUBLIC_IP}:51820
+PersistentKeepalive = 25
