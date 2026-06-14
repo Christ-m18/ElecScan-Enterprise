@@ -3,6 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useState } from 'react';
 
+const apiBase =
+  process.env.NEXT_PUBLIC_IAM_BASE_URL ??
+  (process.env.NODE_ENV === 'production'
+    ? 'https://elecscan-iam.vercel.app'
+    : 'http://localhost:4001');
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -15,19 +21,20 @@ export default function LoginPage() {
     setError(null);
     setBusy(true);
     try {
-      const apiBase =
-        process.env.NEXT_PUBLIC_IAM_BASE_URL ??
-        (process.env.NODE_ENV === 'production'
-          ? 'https://elecscan-iam.vercel.app'
-          : 'http://localhost:4001');
       const res = await fetch(`${apiBase}/iam/auth/login`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
       if (!res.ok) {
-        setError('Credenciales inválidas');
+        setError('Credenciales inv\xe1lidas');
       } else {
+        const { accessToken, refreshToken } = (await res.json()) as {
+          accessToken: string;
+          refreshToken: string;
+        };
+        localStorage.setItem('access_token', accessToken);
+        localStorage.setItem('refresh_token', refreshToken);
         router.push('/');
       }
     } catch {
@@ -55,7 +62,7 @@ export default function LoginPage() {
           </svg>
         </div>
         <span className="text-sm font-bold tracking-[3px] uppercase">
-          ELEC<em className="not-italic text-accent">SCAN</em>{' '}
+          ELEC<em className="not-italic text-accent">SCAN</em>{" "}
           <span className="text-[10px] font-normal text-white/50">Enterprise</span>
         </span>
         <div className="ml-auto flex items-center gap-3 text-xs">
@@ -66,10 +73,8 @@ export default function LoginPage() {
         </div>
       </header>
 
-      {/* Login card */}
       <div className="flex flex-1 items-center justify-center px-4 py-8">
         <div className="w-full max-w-sm">
-          {/* Card header (steel-blue bar) */}
           <div className="panel-header rounded-t">
             <div className="flex items-center gap-2">
               <svg
@@ -84,7 +89,7 @@ export default function LoginPage() {
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                 <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
-              Acceso seguro — MI-550 Enterprise
+              Acceso seguro \u2014 MI-550 Enterprise
             </div>
           </div>
 
@@ -94,7 +99,7 @@ export default function LoginPage() {
           >
             <div className="mb-5">
               <label className="field-label mb-1" htmlFor="email">
-                Correo electrónico
+                Correo electr\xf3nico
               </label>
               <input
                 id="email"
@@ -107,10 +112,9 @@ export default function LoginPage() {
                 placeholder="usuario@empresa.com"
               />
             </div>
-
             <div className="mb-5">
               <label className="field-label mb-1" htmlFor="password">
-                Contraseña
+                Contrase\xf1a
               </label>
               <input
                 id="password"
@@ -120,7 +124,7 @@ export default function LoginPage() {
                 required
                 autoComplete="current-password"
                 className="field-input"
-                placeholder="••••••••••••"
+                placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
               />
             </div>
 
@@ -140,11 +144,10 @@ export default function LoginPage() {
             </button>
 
             <p className="mt-4 text-center font-mono text-[10px] text-muted">
-              Bootstrap M0 — 2FA y SSO disponibles en M5
+              IEC 62443 SL2 \u2014 Acceso seguro
             </p>
           </form>
 
-          {/* Bottom action bar */}
           <div className="action-bar rounded-b-sm text-xs text-muted">
             <span className="flex items-center gap-1.5">
               <span className="status-ok" />
