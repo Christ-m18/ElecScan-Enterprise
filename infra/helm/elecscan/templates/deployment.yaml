@@ -1,0 +1,110 @@
+{{- range $svcName, $svcCfg := .Values.services }}
+{{- if $svcCfg.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "elecscan.fullname" (dict "svc" $svcName "root" $) }}
+  namespace: {{ $.Values.global.namespace }}
+  labels:
+    {{- include "elecscan.labels" (dict "svc" $svcName "root" $) | nindent 4 }}
+spec:
+  replicas: {{ $svcCfg.replicas }}
+  selector:
+    matchLabels:
+      {{- include "elecscan.selectorLabels" (dict "svc" $svcName "root" $) | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "elecscan.selectorLabels" (dict "svc" $svcName "root" $) | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ $svcCfg.port | quote }}
+        prometheus.io/path: "/metrics"
+    spec:
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      terminationGracePeriodSeconds: 30
+      {{- if $.Values.podAntiAffinity.enabled }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    {{- include "elecscan.selectorLabels" (dict "svc" $svcName "root" $) | nindent 20 }}
+                topologyKey: {{ $.Values.podAntiAffinity.topologyKey }}
+      {{- end }}
+      containers:
+        - name: {{ $svcName }}
+          image: {{ include "elecscan.image" (dict "svc" $svcName "root" $) }}
+          imagePullPolicy: {{ $.Values.global.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $svcCfg.port }}
+              protocol: TCP
+          envFrom:
+            {{- toYaml $.Values.global.envFrom | nindent 12 }}
+          env:
+            - name: PORT
+              value: {{ $svcCfg.port | quote }}
+            - name: NODE_ENV
+              value: {{ $.Values.global.env | quote }}
+            {{- range $k, $v := $svcCfg.env }}
+            - name: {{ $k }}
+              value: {{ $v | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml $svcCfg.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 15
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+        {{- if $.Values.opa.enabled }}
+        - name: opa
+          image: {{ $.Values.opa.image }}
+          args:
+            - run
+            - --server
+            - --addr=:{{ $.Values.opa.port }}
+            - /policies
+          ports:
+            - name: opa
+              containerPort: {{ $.Values.opa.port }}
+          resources:
+            {{- toYaml $.Values.opa.resources | nindent 12 }}
+          volumeMounts:
+            - name: opa-policies
+              mountPath: /policies
+              readOnly: true
+        {{- end }}
+      volumes:
+        {{- if $.Values.opa.enabled }}
+        - name: opa-policies
+          configMap:
+            name: elecscan-opa-policies
+        {{- end }}
+{{- end }}
+{{- end }}
