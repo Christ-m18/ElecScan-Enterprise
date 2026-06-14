@@ -1,0 +1,15 @@
+apiVersion: v2
+name: elecscan
+description: ElecScan Enterprise — IoT Power Quality Monitoring Platform
+type: application
+version: 0.10.0
+appVersion: "0.10.0"
+keywords:
+  - iot
+  - power-quality
+  - modbus
+  - monitoring
+home: https://github.com/your-org/elecscan-enterprise
+maintainers:
+  - name: ElecScan Platform Team
+dependencies: []
