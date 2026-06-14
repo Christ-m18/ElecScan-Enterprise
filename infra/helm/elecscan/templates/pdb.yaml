@@ -1,0 +1,17 @@
+{{- range $svcName, $svcCfg := .Values.services }}
+{{- if and $svcCfg.enabled $svcCfg.pdb.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "elecscan.fullname" (dict "svc" $svcName "root" $) }}
+  namespace: {{ $.Values.global.namespace }}
+  labels:
+    {{- include "elecscan.labels" (dict "svc" $svcName "root" $) | nindent 4 }}
+spec:
+  minAvailable: {{ $svcCfg.pdb.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "elecscan.selectorLabels" (dict "svc" $svcName "root" $) | nindent 6 }}
+{{- end }}
+{{- end }}
