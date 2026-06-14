@@ -1,0 +1,64 @@
+{{- if .Values.opa.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: elecscan-opa-policies
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "elecscan.labels" (dict "svc" "opa" "root" .) | nindent 4 }}
+data:
+  authz.rego: |
+    package elecscan.authz
+    import future.keywords.if
+    import future.keywords.in
+
+    default allow = false
+
+    role_rank := {
+      "superadmin": 5,
+      "tenant-admin": 4,
+      "site-manager": 3,
+      "operator": 2,
+      "analyst": 1,
+      "viewer": 0
+    }
+
+    superadmin_write_prefixes := ["/users", "/iam/users"]
+    admin_write_prefixes := ["/tenants", "/iam/tenants", "/notifications/config"]
+
+    allow if {
+      input.method == "GET"
+      role_rank[input.role] >= role_rank["viewer"]
+    }
+
+    allow if {
+      input.method in {"POST","PUT","PATCH","DELETE"}
+      role_rank[input.role] >= role_rank["operator"]
+      not _path_requires_admin(input.path)
+      not _path_requires_superadmin(input.path)
+    }
+
+    allow if {
+      input.method in {"POST","PUT","PATCH","DELETE"}
+      role_rank[input.role] >= role_rank["tenant-admin"]
+      _path_requires_admin(input.path)
+      not _path_requires_superadmin(input.path)
+    }
+
+    allow if {
+      input.method in {"POST","PUT","PATCH","DELETE"}
+      role_rank[input.role] >= role_rank["superadmin"]
+      _path_requires_superadmin(input.path)
+    }
+
+    _path_requires_admin(path) if {
+      some p in admin_write_prefixes
+      startswith(path, p)
+    }
+
+    _path_requires_superadmin(path) if {
+      some p in superadmin_write_prefixes
+      startswith(path, p)
+    }
+{{- end }}
