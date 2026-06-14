@@ -1,0 +1,49 @@
+# ElecScan Enterprise — Production Environment Application
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: elecscan-production
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: elecscan
+    environment: production
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Christ-m18/ElecScan-Enterprise.git
+    targetRevision: main
+    path: infra/helm/elecscan
+    helm:
+      releaseName: elecscan
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: global.env
+          value: production
+        - name: global.image.tag
+          value: "0.10.0"
+        - name: mtls.enabled
+          value: "true"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: elecscan
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        maxDuration: 5m0s
+        factor: 2
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas
