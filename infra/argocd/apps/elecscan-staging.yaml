@@ -1,0 +1,48 @@
+# ElecScan Enterprise — Staging Environment Application
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: elecscan-staging
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: elecscan
+    environment: staging
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/Christ-m18/ElecScan-Enterprise.git
+    targetRevision: develop
+    path: infra/helm/elecscan
+    helm:
+      releaseName: elecscan-staging
+      valueFiles:
+        - values.yaml
+      parameters:
+        - name: global.env
+          value: staging
+        - name: global.namespace
+          value: elecscan-staging
+        - name: global.image.tag
+          value: latest
+        - name: mtls.enabled
+          value: "false"
+        - name: services.api-gateway.replicas
+          value: "1"
+        - name: services.api-gateway.hpa.enabled
+          value: "false"
+        - name: web.replicas
+          value: "1"
+        - name: web.hpa.enabled
+          value: "false"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: elecscan-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
