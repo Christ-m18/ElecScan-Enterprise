@@ -1,0 +1,21 @@
+{{- range $svcName, $svcCfg := .Values.services }}
+{{- if $svcCfg.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "elecscan.fullname" (dict "svc" $svcName "root" $) }}
+  namespace: {{ $.Values.global.namespace }}
+  labels:
+    {{- include "elecscan.labels" (dict "svc" $svcName "root" $) | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ $svcCfg.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "elecscan.selectorLabels" (dict "svc" $svcName "root" $) | nindent 4 }}
+{{- end }}
+{{- end }}
