@@ -17,8 +17,9 @@ const users = new Map();
 // ─── Seed users on cold start ─────────────────────────────────────────
 const DEMO_TENANT = '11111111-1111-4111-8111-111111111111';
 const SEED_USERS = [
-  { email: 'demo@elecscan.local', password: 'demo-password-12345' },
-  { email: 'christopherjesusrosario@gmail.com', password: 'MI550PQA' },
+  { email: 'admin@elecscan.io', password: 'Admin1234!', role: 'superadmin' },
+  { email: 'demo@elecscan.local', password: 'demo-password-12345', role: 'operator' },
+  { email: 'christopherjesusrosario@gmail.com', password: 'MI550PQA', role: 'superadmin' },
 ];
 
 let seeded = false;
@@ -33,6 +34,7 @@ async function ensureSeeded() {
         tenantId: DEMO_TENANT,
         email: k,
         passwordHash: hash,
+        role: u.role || 'viewer',
         status: 'active',
         mfaEnrolled: false,
         createdAt: new Date().toISOString(),
@@ -45,7 +47,7 @@ async function ensureSeeded() {
 // ─── Token helpers ────────────────────────────────────────────────────
 async function issueTokens(user) {
   const now = Math.floor(Date.now() / 1000);
-  const accessToken = await new SignJWT({ tid: user.tenantId, eml: user.email })
+  const accessToken = await new SignJWT({ tid: user.tenantId, eml: user.email, rol: user.role || 'viewer' })
     .setProtectedHeader({ alg: 'HS256' })
     .setSubject(user.id)
     .setIssuedAt(now)
@@ -127,6 +129,7 @@ export default async function handler(req, res) {
       tenantId: body.tenantId,
       email: k,
       passwordHash: hash,
+      role: body.role || 'viewer',
       status: 'active',
       mfaEnrolled: false,
       createdAt: new Date().toISOString(),
