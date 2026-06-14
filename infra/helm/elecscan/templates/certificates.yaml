@@ -1,0 +1,62 @@
+{{- if .Values.mtls.enabled }}
+# cert-manager Certificate resources for Zone 1 → Zone 2 mTLS (Conduit C2)
+# Requires cert-manager v1.14+ installed in the cluster
+---
+# Internal CA issuer backed by Kubernetes Secret
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: elecscan-internal-ca
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "elecscan.labels" (dict "svc" "mtls" "root" .) | nindent 4 }}
+spec:
+  ca:
+    secretName: elecscan-mtls-ca-secret
+
+---
+# Server certificate for Zone 1 services (api-gateway, iam-service, etc.)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: elecscan-mtls-server
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "elecscan.labels" (dict "svc" "mtls" "root" .) | nindent 4 }}
+spec:
+  secretName: elecscan-mtls-server-tls
+  duration: 720h    # 30 days
+  renewBefore: 168h # 7 days before expiry
+  commonName: elecscan-server
+  dnsNames:
+    - elecscan-api-gateway.{{ .Values.global.namespace }}.svc.cluster.local
+    - elecscan-iam-service.{{ .Values.global.namespace }}.svc.cluster.local
+  usages:
+    - server auth
+    - client auth
+  issuerRef:
+    name: elecscan-internal-ca
+    kind: Issuer
+
+---
+# Client certificate for Zone 2 services (connector-service)
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: elecscan-mtls-client-connector
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "elecscan.labels" (dict "svc" "mtls" "root" .) | nindent 4 }}
+spec:
+  secretName: elecscan-mtls-client-connector-tls
+  duration: 720h
+  renewBefore: 168h
+  commonName: elecscan-connector-service
+  dnsNames:
+    - elecscan-connector-service.{{ .Values.global.namespace }}.svc.cluster.local
+  usages:
+    - client auth
+  issuerRef:
+    name: elecscan-internal-ca
+    kind: Issuer
+{{- end }}
