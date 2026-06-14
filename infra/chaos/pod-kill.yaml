@@ -1,0 +1,84 @@
+# LitmusChaos — Pod Kill Experiment
+# Validates that PDBs and HPA keep the system available when pods are killed.
+---
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: elecscan-pod-kill
+  namespace: elecscan
+  labels:
+    app.kubernetes.io/part-of: elecscan
+    chaos-scenario: pod-kill
+spec:
+  appinfo:
+    appns: elecscan
+    applabel: app.kubernetes.io/part-of=elecscan
+    appkind: deployment
+  engineState: active
+  chaosServiceAccount: litmus-admin
+  monitoring: true
+  jobCleanUpPolicy: retain
+  experiments:
+    - name: pod-delete
+      spec:
+        components:
+          env:
+            - name: TARGET_PODS
+              value: ""
+            - name: PODS_AFFECTED_PERC
+              value: "50"
+            - name: TOTAL_CHAOS_DURATION
+              value: "120"
+            - name: CHAOS_INTERVAL
+              value: "30"
+            - name: FORCE
+              value: "true"
+            - name: SEQUENCE
+              value: parallel
+        probe:
+          - name: api-health-check
+            type: httpProbe
+            httpProbe/inputs:
+              url: http://elecscan-api-gateway.elecscan.svc.cluster.local:4000/health
+              method:
+                get:
+                  criteria: ==
+                  responseCode: "200"
+              insecureSkipVerify: true
+            mode: Continuous
+            runProperties:
+              probeTimeout: 5s
+              interval: 10s
+              retry: 3
+              probePollingInterval: 2s
+    - name: pod-delete
+      spec:
+        components:
+          env:
+            - name: TARGET_PODS
+              value: ""
+            - name: APP_LABEL
+              value: app.kubernetes.io/name=connector-service
+            - name: PODS_AFFECTED_PERC
+              value: "100"
+            - name: TOTAL_CHAOS_DURATION
+              value: "60"
+            - name: CHAOS_INTERVAL
+              value: "60"
+            - name: FORCE
+              value: "true"
+        probe:
+          - name: connector-recovery
+            type: httpProbe
+            httpProbe/inputs:
+              url: http://elecscan-connector-service.elecscan.svc.cluster.local:4003/health
+              method:
+                get:
+                  criteria: ==
+                  responseCode: "200"
+              insecureSkipVerify: true
+            mode: OnChaos
+            runProperties:
+              probeTimeout: 10s
+              interval: 15s
+              retry: 5
