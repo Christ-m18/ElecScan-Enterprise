@@ -254,8 +254,8 @@ importers:
         specifier: 10.4.15
         version: 10.4.15(@nestjs/common@10.4.15(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.15(@nestjs/common@10.4.15(reflect-metadata@0.2.2)(rxjs@7.8.1))(reflect-metadata@0.2.2)(rxjs@7.8.1))
       jose:
-        specifier: 5.9.6
-        version: 5.9.6
+        specifier: 6.2.3
+        version: 6.2.3
       reflect-metadata:
         specifier: 0.2.2
         version: 0.2.2
@@ -588,8 +588,8 @@ importers:
         specifier: 4.28.1
         version: 4.28.1
       jose:
-        specifier: 5.9.6
-        version: 5.9.6
+        specifier: 6.2.3
+        version: 6.2.3
       reflect-metadata:
         specifier: 0.2.2
         version: 0.2.2
@@ -3204,8 +3204,8 @@ packages:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
 
-  jose@5.9.6:
-    resolution: {integrity: sha512-AMlnetc9+CV9asI19zHmrgS/WYsWUwCn2R7RzlbJWD7F9eWYUTGyBmU9o6PxngtLGOiDGPRu+Uc4fhKzbpteZQ==}
+  jose@6.2.3:
+    resolution: {integrity: sha512-YYVDInQKFJfR/xa3ojUTl8c2KoTwiL1R5Wg9YCydwH0x0B9grbzlg5HC7mMjCtUJjbQ/YnGEZIhI5tCgfTb4Hw==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -6537,7 +6537,7 @@ snapshots:
 
   jiti@2.6.1: {}
 
-  jose@5.9.6: {}
+  jose@6.2.3: {}
 
   js-tokens@4.0.0: {}
 
