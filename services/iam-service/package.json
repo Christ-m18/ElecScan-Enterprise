@@ -15,7 +15,7 @@
   "dependencies": {
     "@elecscan/shared-config": "workspace:*",
     "@elecscan/shared-domain": "workspace:*",
-    "@nestjs/common": "10.4.15",
+    "@nestjs/common": "11.1.27",
     "@nestjs/core": "10.4.15",
     "@nestjs/platform-fastify": "10.4.15",
     "fastify": "4.28.1",
