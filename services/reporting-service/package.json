@@ -28,7 +28,7 @@
     "@types/node": "20.11.30",
     "@types/pg": "8.11.10",
     "@types/pdfkit": "0.13.9",
-    "fastify": "4.28.1",
+    "fastify": "5.9.0",
     "@vitest/coverage-v8": "2.1.8",
     "tsx": "4.19.2",
     "typescript": "5.7.3",
